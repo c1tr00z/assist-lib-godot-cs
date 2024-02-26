@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://b77u6yektff5"]
+
+[ext_resource type="Script" path="res://addons/AssistLib/EditorUI/Scripts/AssistLibUIRootPanel.cs" id="1_leuur"]
+
+[node name="AssistLibUiRootPanel" type="CenterContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 1.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_leuur")
+
+[node name="VFlowContainer" type="VFlowContainer" parent="."]
+layout_mode = 2
+
+[node name="CollectDBEntriesButton" type="Button" parent="VFlowContainer"]
+layout_mode = 2
+text = "Collect DB Entries"
+
+[connection signal="pressed" from="VFlowContainer/CollectDBEntriesButton" to="." method="CollectDBEntries"]
