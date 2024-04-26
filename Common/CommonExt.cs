@@ -13,5 +13,13 @@ public static class CommonExt {
         return cached;
     }
 
+    public static bool TryGetCached<T>(ref T cached, Func<T> getter) {
+        if (cached == null) {
+            cached = getter();
+        }
+
+        return cached != null;
+    }
+
     #endregion
 }
