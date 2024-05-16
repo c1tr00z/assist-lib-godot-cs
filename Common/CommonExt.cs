@@ -1,4 +1,5 @@
 using System;
+using Godot;
 
 namespace c1tr00z.AssistLib.Common;
 
@@ -19,6 +20,14 @@ public static class CommonExt {
         }
 
         return cached != null;
+    }
+
+    public static T GetCachedByPath<T>(ref T cached, Node node, NodePath path) where T : Node {
+        if (cached == null) {
+            cached = node.GetNode<T>(path);
+        }
+
+        return cached;
     }
 
     #endregion
