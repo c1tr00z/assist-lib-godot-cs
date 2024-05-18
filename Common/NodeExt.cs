@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
@@ -31,15 +32,28 @@ public static class NodeExt {
         return cached;
     }
 
-    public static T FindInChildrenByType<T>(this Node root) {
+    public static List<T> FindAllInChildrenByType<T>(this Node root, bool recursively = false) {
+        var result = new List<T>();
+
+        var allChildren = root.GetChildren(true).ToList();
+        result.AddRange(allChildren.OfType<T>());
+
+        if (recursively) {
+            allChildren.ForEach(c => result.AddRange(c.FindAllInChildrenByType<T>(true)));
+        }
+        
+        return result;
+    }
+
+    public static T FindInChildrenByType<T>(this Node root, bool recursively = false) {
         if (root is T tObj) {
             return tObj;
         }
         var allChildren = root.GetChildren(true).ToList();
         var demanded = allChildren.OfType<T>().FirstOrDefault();
-        if (demanded == null) {
+        if (demanded == null && recursively) {
             foreach (var child in allChildren) {
-                demanded = FindInChildrenByType<T>(child);
+                demanded = FindInChildrenByType<T>(child, true);
                 if (demanded != null) {
                     return demanded;
                 }
@@ -63,6 +77,21 @@ public static class NodeExt {
         }
 
         return FindInParentsByType<T>(parent);
+    }
+
+    public static void EnableNode(this Node node) {
+        node.CallDeferred(Node.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Inherit);
+
+        if (node is Node2D node2D) {
+            node2D.Show();
+        }
+    }
+
+    public static void DisableNode(this Node node) {
+        if (node is Node2D node2D) {
+            node2D.Hide();
+        }
+        node.CallDeferred(Node.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Disabled);
     }
 
     #endregion

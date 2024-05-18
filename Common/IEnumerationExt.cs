@@ -63,6 +63,22 @@ public static class IEnumerationExt {
         }
     }
 
+    public static IEnumerable<T2> SelectNotNull<T1, T2>(this IEnumerable<T1> enumerable, Func<T1, T2> selector) {
+        var list = new List<T2>();
+
+        foreach (var item in enumerable) {
+            var resultItem = selector(item);
+
+            if (resultItem == null) {
+                continue;
+            }
+            
+            list.Add(resultItem);
+        }
+
+        return list;
+    }
+
     public static List<T> MinElements<T>(this List<T> list, Func<T, IComparable> selector) {
         var minElements = new List<T>();
         IComparable minValue = 0;
