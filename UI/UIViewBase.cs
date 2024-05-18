@@ -76,6 +76,8 @@ public abstract partial class UIViewBase : Node2D {
         }
         
         OnArgs(args);
+        
+        this.FindAllInChildrenByType<UIViewBase>().ForEach(v => v.ShowView(GetViewParams()));
     }
 
     protected abstract void OnArgs(params object[] args);
