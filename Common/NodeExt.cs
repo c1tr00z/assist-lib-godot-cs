@@ -31,6 +31,18 @@ public static class NodeExt {
 
         return cached;
     }
+    
+    public static T GetCached<T>(this Node parent, ref T cached, NodePath nodePath) where T : Node {
+        return cached ??= parent.GetNode<T>(nodePath);
+    }
+
+    public static bool TryGetCached<T>(this Node parent, ref T cached, NodePath nodePath) where T : Node {
+        if (cached == null) {
+            cached = parent.GetNode<T>(nodePath);
+        }
+
+        return cached != null;
+    }
 
     public static List<T> FindAllInChildrenByType<T>(this Node root, bool recursively = false) {
         var result = new List<T>();
