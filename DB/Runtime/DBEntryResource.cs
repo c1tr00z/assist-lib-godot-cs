@@ -3,6 +3,7 @@ using Godot;
 namespace AssistLib.DB.Runtime;
 
 [GlobalClass]
+[Tool]
 public partial class DBEntryResource : Node {
     
     #region Export Fields
