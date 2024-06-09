@@ -22,6 +22,8 @@ public abstract partial class UIViewBase : Node2D {
 
     private object[] _args = Array.Empty<object>();
     
+    private List<UIViewBase> _childViews = new ();
+    
     #endregion
 
     #region Export Fields
@@ -77,7 +79,7 @@ public abstract partial class UIViewBase : Node2D {
         
         OnArgs(args);
         
-        this.FindAllInChildrenByType<UIViewBase>().ForEach(v => v.ShowView(GetViewParams()));
+        UpdateChildViews();
     }
 
     protected abstract void OnArgs(params object[] args);
@@ -114,6 +116,13 @@ public abstract partial class UIViewBase : Node2D {
 
     protected bool TryGetCachedNodeFromPath<T>(ref T node, NodePath path) where T : Node {
         return CommonExt.TryGetCached(ref node, () => GetNode<T>(path));
+    }
+
+    protected void UpdateChildViews() {
+        if (_childViews.Count == 0) {
+            _childViews = this.FindAllInChildrenByType<UIViewBase>();
+        }
+        _childViews.ForEach(v => v.ShowView(GetViewParams()));
     }
 
     #endregion
