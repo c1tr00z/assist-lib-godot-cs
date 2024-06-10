@@ -104,8 +104,6 @@ public partial class UIImageByDBEntry : Control {
                 _textureRect.Texture = _texture;
             }
             
-            GD.PushError($"Load {request.dbEntry.GetName()}_{_key}::: 4");
-            
             if (this.TryGetCached(ref _placeholderObject, _placeholderObjectPath)) {
                 _placeholderObject.Visible = false;
             }
