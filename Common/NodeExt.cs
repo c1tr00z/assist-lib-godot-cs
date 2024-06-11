@@ -92,7 +92,7 @@ public static class NodeExt {
     }
 
     public static void EnableNode(this Node node) {
-        node.CallDeferred(Node.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Inherit);
+        node.CallDeferred(GodotObject.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Inherit);
 
         if (node is Node2D node2D) {
             node2D.Show();
@@ -103,7 +103,7 @@ public static class NodeExt {
         if (node is Node2D node2D) {
             node2D.Hide();
         }
-        node.CallDeferred(Node.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Disabled);
+        node.CallDeferred(GodotObject.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Disabled);
     }
 
     #endregion

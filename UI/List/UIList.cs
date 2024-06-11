@@ -145,8 +145,7 @@ public partial class UIList : Control {
         if (uiListItem.GetParent() != container) {
             container.CallDeferred(Node.MethodName.AddChild, uiListItem);
         } else {
-            uiListItem.CallDeferred(GodotObject.MethodName.Set, "process_mode", (long)ProcessModeEnum.Inherit);
-            uiListItem.Show();
+            uiListItem.EnableNode();
         }
     }
 
@@ -159,8 +158,7 @@ public partial class UIList : Control {
             _cached[listItem.itemType] = new Queue<UIListItem>();
         }
         
-        listItem.Hide();
-        listItem.CallDeferred(GodotObject.MethodName.Set, "process_mode", (long)ProcessModeEnum.Disabled);
+        listItem.DisableNode();
         _cached[listItem.itemType].Enqueue(listItem);
     }
 
