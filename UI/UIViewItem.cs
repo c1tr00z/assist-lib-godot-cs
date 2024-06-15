@@ -15,6 +15,7 @@ public partial class UIViewItem<T> : UIViewBase {
 
     protected override void OnArgs(params object[] args) {
         item = args.OfType<T>().FirstOrDefault();
+        UpdateView();
     }
 
     #endregion
