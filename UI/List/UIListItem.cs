@@ -44,5 +44,23 @@ public partial class UIListItem : Control {
         views.ForEach(v => v.ShowView(item));
     }
 
+    public virtual void SubscribeToEvents() {
+        MouseEntered += OnMouseEntered;
+        MouseExited += OnMouseExited;
+    }
+
+    public virtual void UnsubscribeFromEvents() {
+        MouseEntered -= OnMouseEntered;
+        MouseExited -= OnMouseExited;
+    }
+
+    protected virtual void OnMouseEntered() {
+        views.ForEach(v => v.OnMouseEntered());
+    }
+
+    protected virtual void OnMouseExited() {
+        views.ForEach(v => v.OnMouseExited());
+    }
+
     #endregion
 }

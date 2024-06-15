@@ -25,6 +25,8 @@ public partial class UIList : Control {
     private Container _container;
 
     private List<UIListItem> _listItems = new();
+    
+    private System.Collections.Generic.Dictionary<String, Type> _itemTypesByNames = new();
 
     private System.Collections.Generic.Dictionary<Type, Queue<UIListItem>> _cached = new();
 
@@ -124,7 +126,16 @@ public partial class UIList : Control {
             return items.Dequeue();
         }
 
-        var uiListItemDBEntry = _items.FirstOrDefault(i => i.fullTypeName == type.FullName);
+        if (_itemTypesByNames.Count == 0) {
+            _itemTypesByNames =
+                _items.ToDictionary(i => i.fullTypeName, i => ReflectionUtils.GetTypeByName(i.fullTypeName));
+        }
+
+        var uiListItemDBEntry = _items.FirstOrDefault(i => _itemTypesByNames[i.fullTypeName] == type);
+
+        if (uiListItemDBEntry == null) {
+            uiListItemDBEntry = _items.FirstOrDefault(i => _itemTypesByNames[i.fullTypeName].IsAssignableFrom(type));
+        }
 
         if (uiListItemDBEntry == null) {
             throw new Exception($"No item for type {type.FullName}");

@@ -101,7 +101,11 @@ public abstract partial class UIViewBase : Node2D {
     protected virtual void OnHide() {}
 
     protected virtual void OnParentViewUpdated() { }
-
+    
+    public virtual void OnMouseEntered() { }
+    
+    public virtual void OnMouseExited() { }
+    
     protected virtual object[] GetViewParams() {
         return Array.Empty<object>();
     }
@@ -112,10 +116,6 @@ public abstract partial class UIViewBase : Node2D {
 
     protected void OnUpdated() {
         Updated?.Invoke();
-    }
-
-    protected bool TryGetCachedNodeFromPath<T>(ref T node, NodePath path) where T : Node {
-        return CommonExt.TryGetCached(ref node, () => GetNode<T>(path));
     }
 
     protected void UpdateChildViews() {

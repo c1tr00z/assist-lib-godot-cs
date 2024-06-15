@@ -33,13 +33,11 @@ public static class NodeExt {
     }
     
     public static T GetCached<T>(this Node parent, ref T cached, NodePath nodePath) where T : Node {
-        return cached ??= parent.GetNode<T>(nodePath);
+        return cached ??= parent.GetNodeOrNull<T>(nodePath);
     }
 
     public static bool TryGetCached<T>(this Node parent, ref T cached, NodePath nodePath) where T : Node {
-        if (cached == null) {
-            cached = parent.GetNode<T>(nodePath);
-        }
+        cached ??= parent.GetNodeOrNull<T>(nodePath);
 
         return cached != null;
     }

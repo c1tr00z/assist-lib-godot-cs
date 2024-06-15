@@ -21,7 +21,7 @@ public partial class UIViewItem<T> : UIViewBase {
 
     #region Class Implementation
 
-    
+    protected virtual void UpdateView() { }
 
     #endregion
 }
