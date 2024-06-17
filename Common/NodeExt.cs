@@ -88,6 +88,12 @@ public static class NodeExt {
 
         return FindInParentsByType<T>(parent);
     }
+    
+    public static bool TryFindInParentsByType<T>(this Node child, out T outResult) {
+        outResult = child.FindInParentsByType<T>();
+
+        return outResult != null;
+    }
 
     public static void EnableNode(this Node node) {
         node.CallDeferred(GodotObject.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Inherit);

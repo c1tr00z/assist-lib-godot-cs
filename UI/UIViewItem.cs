@@ -19,10 +19,4 @@ public partial class UIViewItem<T> : UIViewBase {
     }
 
     #endregion
-
-    #region Class Implementation
-
-    protected virtual void UpdateView() { }
-
-    #endregion
 }

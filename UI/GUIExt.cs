@@ -8,5 +8,9 @@ public static class GUIExt {
         Modules.Modules.Get<GUI>().ShowFrame(uiFrame, args);
     }
 
+    public static void HideMe(this UIFrame uiFrame) {
+        Modules.Modules.Get<GUI>().HideFrame(uiFrame);
+    }
+
     #endregion
 }

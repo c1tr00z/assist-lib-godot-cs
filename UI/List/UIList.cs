@@ -12,6 +12,12 @@ namespace c1tr00z.AssistLib.UI.List;
 [GlobalClass]
 public partial class UIList : Control {
 
+    #region Events
+
+    public event Action<object> ItemSelected;
+
+    #endregion
+
     #region Nested Classes
 
     private struct ItemsRequest {
@@ -24,6 +30,8 @@ public partial class UIList : Control {
 
     private Container _container;
 
+    private List<object> _objectItems = new();
+    
     private List<UIListItem> _listItems = new();
     
     private System.Collections.Generic.Dictionary<String, Type> _itemTypesByNames = new();
@@ -78,10 +86,12 @@ public partial class UIList : Control {
                 var request = _requests.Last();
                 _requests.Clear();
                 await ProcessRequest(request);
+                _objectItems = request.items;
             } else {
                 while (_requests.Count > 0) {
                     var request = _requests.Dequeue();
                     await ProcessRequest(request);
+                    _objectItems = request.items;
                 }
             }
         }
@@ -102,6 +112,9 @@ public partial class UIList : Control {
 
             if (i >= _listItems.Count) {
                 var newListItem = await GetListItem(itemType);
+                GD.PushError(newListItem);
+                newListItem.SubscribeToEvents();
+                newListItem.Selected += ListItemOnSelected;
                 PlaceListItem(newListItem);
                 newListItem.SetItem(item);
                 _listItems.Add(newListItem);
@@ -111,6 +124,9 @@ public partial class UIList : Control {
                 if (current.itemType != itemType) {
                     ReturnToPool(current);
                     current = await GetListItem(itemType);
+                    GD.PushError(current);
+                    current.SubscribeToEvents();
+                    current.Selected += ListItemOnSelected;
                     PlaceListItem(current);
                     container.MoveChild(current, i);
                     _listItems.Add(current);
@@ -169,8 +185,14 @@ public partial class UIList : Control {
             _cached[listItem.itemType] = new Queue<UIListItem>();
         }
         
+        listItem.Selected -= ListItemOnSelected;
+        listItem.UnsubscribeFromEvents();
         listItem.DisableNode();
         _cached[listItem.itemType].Enqueue(listItem);
+    }
+
+    private void ListItemOnSelected(UIListItem uiListItem) {
+        ItemSelected?.Invoke(uiListItem.item);
     }
 
     #endregion

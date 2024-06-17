@@ -57,8 +57,12 @@ public abstract partial class UILayerBase : Node2D {
             return;
         }
         
-        activeFrame.HideFrame();
-        AddToCached(activeFrame);
+        HideFrame(activeFrame);
+    }
+
+    public void HideFrame(UIFrame uiFrame) {
+        uiFrame.HideFrame();
+        AddToCached(uiFrame);
     }
 
     protected abstract bool TryGetFromActive(UIFrameDBEntry frameDbEntry, out UIFrame activeFrame);

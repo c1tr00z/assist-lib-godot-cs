@@ -67,6 +67,15 @@ public partial class GUI : Module {
         layer.HideFrame(frameDbEntry);
     }
 
+    public void HideFrame(UIFrame uiFrame) {
+        if (!_layers.TryGetValue(uiFrame.dbEntry.layer, out UILayerBase layer)) {
+            GD.PushError($"No layer with DB Entry {uiFrame.dbEntry.layer?.GetName()}");
+            return;
+        }
+        
+        layer.HideFrame(uiFrame);
+    }
+
     private async Task ShowProcess() {
         _isShowingProcess = true;
 

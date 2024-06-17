@@ -109,6 +109,8 @@ public abstract partial class UIViewBase : Node2D {
     protected virtual object[] GetViewParams() {
         return Array.Empty<object>();
     }
+
+    protected virtual void UpdateView() { }
     
     protected virtual Dictionary<StringName, object> GetViewNamedParams() {
         return new Dictionary<StringName, object>();

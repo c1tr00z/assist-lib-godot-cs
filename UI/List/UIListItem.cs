@@ -8,6 +8,12 @@ namespace c1tr00z.AssistLib.UI.List;
 
 [GlobalClass]
 public partial class UIListItem : Control {
+
+    #region Events
+
+    public event Action<UIListItem> Selected;
+
+    #endregion
     
     #region Private Fields
 
@@ -20,6 +26,8 @@ public partial class UIListItem : Control {
     #endregion
 
     #region Accessors
+    
+    public object item { get; private set; }
 
     private List<UIViewBase> views {
         get {
@@ -41,6 +49,7 @@ public partial class UIListItem : Control {
     #region Class Implementation
 
     public void SetItem(object item) {
+        this.item = item;
         views.ForEach(v => v.ShowView(item));
     }
 
@@ -60,6 +69,10 @@ public partial class UIListItem : Control {
 
     protected virtual void OnMouseExited() {
         views.ForEach(v => v.OnMouseExited());
+    }
+
+    public void Select() {
+        Selected?.Invoke(this);
     }
 
     #endregion
