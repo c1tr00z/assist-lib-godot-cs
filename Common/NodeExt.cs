@@ -101,9 +101,17 @@ public static class NodeExt {
         if (node is Node2D node2D) {
             node2D.Show();
         }
+
+        if (node is CanvasItem canvasItem) {
+            canvasItem.Visible = true;
+        }
     }
 
     public static void DisableNode(this Node node) {
+        if (node is CanvasItem canvasItem) {
+            canvasItem.Visible = false;
+        }
+        
         if (node is Node2D node2D) {
             node2D.Hide();
         }

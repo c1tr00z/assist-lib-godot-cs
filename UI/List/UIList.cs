@@ -112,7 +112,6 @@ public partial class UIList : Control {
 
             if (i >= _listItems.Count) {
                 var newListItem = await GetListItem(itemType);
-                GD.PushError(newListItem);
                 newListItem.SubscribeToEvents();
                 newListItem.Selected += ListItemOnSelected;
                 PlaceListItem(newListItem);
@@ -124,7 +123,6 @@ public partial class UIList : Control {
                 if (current.itemType != itemType) {
                     ReturnToPool(current);
                     current = await GetListItem(itemType);
-                    GD.PushError(current);
                     current.SubscribeToEvents();
                     current.Selected += ListItemOnSelected;
                     PlaceListItem(current);

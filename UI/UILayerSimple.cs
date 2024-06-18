@@ -26,6 +26,8 @@ public partial class UILayerSimple : UILayerBase {
     protected override bool TryGetFromActive(UIFrameDBEntry frameDbEntry, out UIFrame activeFrame) {
         if (currentFrame != null && currentFrame.dbEntry == frameDbEntry) {
             activeFrame = currentFrame;
+            
+            activeFrame.EnableNode();
 
             return true;
         }
@@ -37,6 +39,8 @@ public partial class UILayerSimple : UILayerBase {
     protected override bool TryGetCached(UIFrameDBEntry frameDbEntry, out UIFrame cachedFrame) {
         if (_cachedFrames.TryGetValue(frameDbEntry, out Queue<UIFrame> cachedQueue) && cachedQueue.Count > 0) {
             cachedFrame = cachedQueue.Dequeue();
+            
+            cachedFrame.EnableNode();
 
             return true;
         }
