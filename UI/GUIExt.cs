@@ -12,5 +12,9 @@ public static class GUIExt {
         Modules.Modules.Get<GUI>().HideFrame(uiFrame);
     }
 
+    public static void TryHide(this UIFrameDBEntry uiFrame) {
+        Modules.Modules.Get<GUI>().HideFrame(uiFrame);
+    }
+
     #endregion
 }

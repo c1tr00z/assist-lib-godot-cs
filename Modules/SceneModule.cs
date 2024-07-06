@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Godot;
 
 namespace c1tr00z.AssistLib.Modules;
 

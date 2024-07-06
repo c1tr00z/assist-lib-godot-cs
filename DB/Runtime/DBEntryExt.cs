@@ -107,6 +107,10 @@ public static class DBEntryExt {
         return result;
     }
 
+    public static DBLoadResult<PackedScene> LoadSceneRequestAsync(this DBEntry dbEntry) {
+        return dbEntry.LoadRequestAsync<PackedScene>("scene.tscn");
+    }
+
     public static T GetCachedNodeDBEntry<T>(this Node node, ref T cached) where T : DBEntry {
         if (cached == null) {
             cached = node.FindInChildrenByType<DBEntryResource>().dbEntry as T;

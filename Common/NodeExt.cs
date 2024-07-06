@@ -6,6 +6,7 @@ using Godot;
 namespace c1tr00z.AssistLib.Common;
 
 public static class NodeExt {
+    
     #region Class Implementation
 
     public static T GetCachedInChildren<T>(this Node node, ref T cached) where T : Node {

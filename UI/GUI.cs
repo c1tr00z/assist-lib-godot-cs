@@ -34,6 +34,7 @@ public partial class GUI : Module {
         allLayersDbEntries.Sort((l1, l2) => Mathf.Sign(l1.index - l2.index));
         allLayersDbEntries.ForEach(layerDbEntry => {
             var layer = layerDbEntry.LoadScene().Instantiate<UILayerBase>();
+            layer.Name = layerDbEntry.GetName();
             AddChild(layer);
             _layers.Add(layer.dbEntry, layer);
             layer.canvasLayer.Layer = layerDbEntry.index;
