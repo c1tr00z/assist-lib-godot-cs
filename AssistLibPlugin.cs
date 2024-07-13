@@ -10,7 +10,8 @@ public partial class AssistLibPlugin : EditorPlugin {
     private CanvasItem _mainPanelInstance = null;
 
     //TODO: fix it later
-    private String _pathToWindow = "res://addons/AssistLib/EditorUI/Scenes/AssistLibUIRootPanel.tscn";
+    // private String _pathToWindow = "res://addons/AssistLib/EditorUI/Scenes/AssistLibUIRootPanel.tscn";
+    private String _pathToWindow = "res://addons/AssistLib/EditorTools/Scenes/assist_lib_tools_panel_scene.tscn";
 
     #endregion
 

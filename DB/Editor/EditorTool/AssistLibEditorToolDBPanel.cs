@@ -1,14 +1,11 @@
-#if TOOLS
-
-using AssistLib.DB.Editor;
 using Godot;
 
-namespace AssistLib.EditorUI;
+namespace AssistLib.DB.Editor.EditorTool;
 
 [Tool]
 [GlobalClass]
-public partial class AssistLibUIRootPanel : CenterContainer {
-    
+public partial class AssistLibEditorToolDBPanel : Control {
+
     #region Class Implementation
 
     public void CollectDBEntries() {
@@ -17,4 +14,3 @@ public partial class AssistLibUIRootPanel : CenterContainer {
 
     #endregion
 }
-#endif

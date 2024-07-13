@@ -7,7 +7,6 @@ using Array = System.Array;
 
 namespace c1tr00z.AssistLib.UI;
 
-[GlobalClass]
 public abstract partial class UIViewBase : Node2D {
 
     #region Events
