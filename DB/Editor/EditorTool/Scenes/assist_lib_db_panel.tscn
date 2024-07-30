@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://addons/AssistLib/DB/Editor/EditorTool/AssistLibEditorToolDBPanel.cs" id="1_u0qq2"]
 
 [node name="AssistLibEditorToolDBPanel" type="Control"]
-custom_minimum_size = Vector2(145, 73)
+custom_minimum_size = Vector2(145, 160)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 145.0

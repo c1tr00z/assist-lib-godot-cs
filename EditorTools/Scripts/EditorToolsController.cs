@@ -41,6 +41,7 @@ public class EditorToolsController {
             if (tool == null) {
                 return;
             }
+            tool.InitTool();
             tools.Add(tool);
         });
     }

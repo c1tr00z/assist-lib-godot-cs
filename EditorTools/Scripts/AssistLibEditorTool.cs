@@ -10,4 +10,12 @@ public abstract class AssistLibEditorTool {
     public abstract string panelPath { get; }
 
     #endregion
+
+    #region Class Implementation
+
+    public virtual void InitTool() {
+        
+    }
+
+    #endregion
 }

@@ -5,7 +5,7 @@ namespace projectwitch.addons.AssistLib.EditorTools.Scripts;
 
 [GlobalClass]
 [Tool]
-public partial class AssistLibToolsPanel : Control { //assist_lib_tools_panel_scene
+public partial class AssistLibToolsPanel : Control {
 
     #region Private Fields
 
