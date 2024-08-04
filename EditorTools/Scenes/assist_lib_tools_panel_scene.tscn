@@ -21,10 +21,15 @@ offset_bottom = 40.0
 grow_horizontal = 2
 
 [node name="Label" type="Label" parent="Header"]
-custom_minimum_size = Vector2(540, 0)
+custom_minimum_size = Vector2(510, 0)
 layout_mode = 2
 text = "Tools"
 horizontal_alignment = 1
+
+[node name="SaveButton" type="Button" parent="Header"]
+custom_minimum_size = Vector2(40, 30)
+layout_mode = 2
+text = "Save"
 
 [node name="DecreaseButton" type="Button" parent="Header"]
 custom_minimum_size = Vector2(40, 30)
@@ -58,5 +63,6 @@ custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
 alignment = 1
 
+[connection signal="pressed" from="Header/SaveButton" to="." method="SaveTools"]
 [connection signal="pressed" from="Header/DecreaseButton" to="." method="DecreaseSize"]
 [connection signal="pressed" from="Header/IncreaseButton" to="." method="IncreaseSize"]

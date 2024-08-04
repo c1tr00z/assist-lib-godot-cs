@@ -16,4 +16,25 @@ public abstract partial class AssistLibToolPanel<T> : Control where T : AssistLi
     protected T tool => CommonExt.GetCached(ref _tool, EditorToolsController.Get<T>);
 
     #endregion
+
+    #region Node Implementation
+
+    public override void _EnterTree() {
+        base._EnterTree();
+        AssistLibEditorTool.ToolLoaded += OnToolLoaded;
+        OnToolLoaded(tool);
+    }
+
+    public override void _ExitTree() {
+        base._ExitTree();
+        AssistLibEditorTool.ToolLoaded -= OnToolLoaded;
+    }
+
+    #endregion
+
+    #region Class Implementation
+
+    protected abstract void OnToolLoaded(AssistLibEditorTool tool);
+
+    #endregion
 }

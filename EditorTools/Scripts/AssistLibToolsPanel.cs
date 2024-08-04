@@ -42,6 +42,10 @@ public partial class AssistLibToolsPanel : Control {
         }
     }
 
+    public void SaveTools() {
+        EditorToolsController.instance.SaveTools();
+    }
+
     public void IncreaseSize() {
         if (this.TryGetCached(ref _toolsListNode, _toolsListNodePath)) {
             _panelHeightDelta = Mathf.Min(3000, _panelHeightDelta + 10);

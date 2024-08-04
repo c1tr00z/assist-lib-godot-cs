@@ -76,6 +76,10 @@ public class AssistLibEditorSettings {
             return (T)objValue;
         }
 
+        if (targetType.IsAssignableFrom(typeof(String))) {
+            return (T)(object)value.ToString();
+        }
+
         return (T)(object)value;
     }
 
