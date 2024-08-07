@@ -218,5 +218,10 @@ public static class JSONUtils {
         return json.ContainsKey(key) ? (Dictionary<string, object>)json[key] : new Dictionary<string, object>();
     }
 
+    public static T Get<T>(this Dictionary<string, object> json, string key) {
+        var value = json.ContainsKey(key) ? json[key] : default(T);
+        return (T)DeserializeValue(value, typeof(T));
+    }
+
     #endregion
 }

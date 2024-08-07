@@ -11,11 +11,9 @@ namespace projectwitch.addons.AssistLib.EditorTools.Scripts;
 [Tool]
 public class EditorToolsController {
 
-    #region Nested Class
+    #region Events
 
-    public class ToolsData : IJsonSerializable, IJsonDeserializable {
-        [JsonSerializableField] public Dictionary<string, Dictionary<string, object>> jsonData = new();
-    }
+    public static event Action RequestData;
 
     #endregion
     
@@ -25,7 +23,11 @@ public class EditorToolsController {
 
     private static EditorToolsController _instance;
 
-    private ToolsData _toolsData;
+    private EditorToolsData _toolsData;
+
+    private List<Type> _toolsSaveTypes = new();
+    
+    private List<Type> _toolsTypes = new();
 
     #endregion
 
@@ -36,6 +38,7 @@ public class EditorToolsController {
             if (_instance == null) {
                 _instance = new EditorToolsController();
                 _instance.Init();
+                GD.PushError("TOOLS INIT");
             }
 
             return _instance;
@@ -49,11 +52,15 @@ public class EditorToolsController {
     #region Class Implementation
 
     private void Init() {
+        if (_toolsTypes.Count == 0) {
+            _toolsTypes = ReflectionUtils.GetSubclassesOf<AssistLibEditorTool>(false);
+            _toolsSaveTypes = ReflectionUtils.GetTypesByInterface<IEditorToolData>(false);
+        }
         var jsonString = AssistLibEditorSettings.Get<string>(SAVE_KEY);
         if (jsonString.IsNullOrEmpty()) {
-            _toolsData = new ToolsData();
+            _toolsData = new EditorToolsData();
         } else {
-            _toolsData = JSONUtils.FromJsonString<ToolsData>(jsonString);
+            _toolsData = JSONUtils.FromJsonString<EditorToolsData>(jsonString);
         }
         var allTypes = ReflectionUtils.GetSubclassesOf<AssistLibEditorTool>(false);
         allTypes.ForEach(t => {
@@ -62,12 +69,16 @@ public class EditorToolsController {
                 return;
             }
 
-            if (_toolsData.jsonData.TryGetValue(tool.GetType().FullName, out Dictionary<string, object> toolJson)) {
-                tool.LoadTool(toolJson);
-            } else {
-                tool.LoadTool(null);
+            var toolDataType = tool.GetType().BaseType.GenericTypeArguments.FirstOrDefault();
+            var toolSaveData = _toolsData.toolsData.FirstOrDefault(save => toolDataType == save.GetType());
+
+            if (toolSaveData == null) {
+                toolSaveData = Activator.CreateInstance(toolDataType) as IEditorToolData;
             }
-            tools.Add(tool);
+
+            if (tool.LoadTool(toolSaveData)) {
+                tools.Add(tool);
+            }
         });
     }
 
@@ -80,11 +91,10 @@ public class EditorToolsController {
     }
 
     public void SaveTools() {
-        _toolsData.jsonData.Clear();
+        RequestData?.Invoke();
+        _toolsData.toolsData.Clear();
         tools.ForEach(t => {
-            var json = new Dictionary<string, object>();
-            t.SaveTool(json);
-            _toolsData.jsonData.Add(t.GetType().FullName, json);
+            _toolsData.toolsData.Add(t.GetSaveData());
         });
         var jsonString = _toolsData.ToJsonString();
         AssistLibEditorSettings.Set(SAVE_KEY, jsonString);

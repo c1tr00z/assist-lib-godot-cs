@@ -21,18 +21,22 @@ public abstract partial class AssistLibToolPanel<T> : Control where T : AssistLi
 
     public override void _EnterTree() {
         base._EnterTree();
+        EditorToolsController.RequestData += OnRequestData;
         AssistLibEditorTool.ToolLoaded += OnToolLoaded;
         OnToolLoaded(tool);
     }
 
     public override void _ExitTree() {
         base._ExitTree();
+        EditorToolsController.RequestData -= OnRequestData;
         AssistLibEditorTool.ToolLoaded -= OnToolLoaded;
     }
 
     #endregion
 
     #region Class Implementation
+
+    protected abstract void OnRequestData();
 
     protected abstract void OnToolLoaded(AssistLibEditorTool tool);
 
