@@ -38,7 +38,6 @@ public class EditorToolsController {
             if (_instance == null) {
                 _instance = new EditorToolsController();
                 _instance.Init();
-                GD.PushError("TOOLS INIT");
             }
 
             return _instance;
