@@ -32,6 +32,9 @@ public partial class AssistLibPlugin : EditorPlugin {
 
     public override void _ExitTree() {
         if (_mainPanelInstance != null) {
+            if (_mainPanelInstance is AssistLibToolsPanel toolsPanel) {
+                toolsPanel.SaveTools();
+            }
             _mainPanelInstance.QueueFree();
         }
     }
