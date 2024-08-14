@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +8,6 @@ public static class SpreadsheetImporter {
     #region Class Implementation
 
     public static bool ParseCSV(string csvString, out List<List<string>> parsed) {
-        var parsedPage = new List<List<string>>();
         parsed = new List<List<string>>();
         
         var rows = csvString.Split('\r', '\n');
@@ -17,7 +15,6 @@ public static class SpreadsheetImporter {
             parsed.Add(row.Split(',').ToList());
         }
 
-        parsed = parsedPage;
         return true;
     }
 
