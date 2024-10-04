@@ -1,23 +1,29 @@
 #if TOOLS
 using Godot;
 using System;
+using projectwitch.addons.AssistLib.EditorTools.Scripts;
 
 [Tool]
 public partial class AssistLibPlugin : EditorPlugin {
     
     #region Private Fields
 
-    private CanvasItem _mainPanelInstance = null;
+    private Control _mainPanelInstance = null;
 
-    //TODO: fix it later
-    private String _pathToWindow = "res://addons/AssistLib/EditorUI/Scenes/AssistLibUIRootPanel.tscn";
+    //TODO: showing tools panel for now
+    private String _pathToWindow = "res://addons/AssistLib/EditorTools/Scenes/assist_lib_tools_panel_scene.tscn";
 
     #endregion
 
     public override void _EnterTree() {
         if (_mainPanelInstance == null) {
             var packedScene = GD.Load<PackedScene>(_pathToWindow);
-            _mainPanelInstance = packedScene.Instantiate<CanvasItem>();
+            _mainPanelInstance = packedScene.Instantiate<Control>();
+            if (_mainPanelInstance is AssistLibToolsPanel toolsPanel) {
+                toolsPanel.InitToolsPanels();
+            } else {
+                GD.Print(_mainPanelInstance.GetType());
+            }
         }
 
         EditorInterface.Singleton.GetEditorMainScreen().AddChild(_mainPanelInstance);
@@ -26,6 +32,9 @@ public partial class AssistLibPlugin : EditorPlugin {
 
     public override void _ExitTree() {
         if (_mainPanelInstance != null) {
+            if (_mainPanelInstance is AssistLibToolsPanel toolsPanel) {
+                toolsPanel.SaveTools();
+            }
             _mainPanelInstance.QueueFree();
         }
     }

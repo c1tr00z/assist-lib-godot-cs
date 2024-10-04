@@ -35,8 +35,10 @@ public partial class SceneModules : Node {
 	}
 
 	public override void _ExitTree() {
-		base._ExitTree();
 		Modules.RemoveSceneModules(this);
+		_sceneModules.ForEach(m => m.QueueFree());
+		_sceneModules.Clear();
+		base._ExitTree();
 	}
 
 	#endregion
@@ -44,7 +46,6 @@ public partial class SceneModules : Node {
 	#region Class Implementation
 
 	private async void InitModules() {
-		var currentModules = modulesCollection;
 		foreach (var modulesDbEntry in modulesCollection.modulesDbEntries) {
 			var module = modulesDbEntry.LoadScene().Instantiate<SceneModule>();
 
@@ -52,6 +53,9 @@ public partial class SceneModules : Node {
 				GD.PushError($"[SceneModules] No module for {modulesDbEntry.GetPath()}");
 				continue;
 			}
+
+			module.Name = modulesDbEntry.GetName() + GD.Randi();
+			
 			AddChild(module);
 			
 			_sceneModules.Add(module);

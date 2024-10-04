@@ -6,6 +6,7 @@ using Godot;
 namespace c1tr00z.AssistLib.Common;
 
 public static class NodeExt {
+    
     #region Class Implementation
 
     public static T GetCachedInChildren<T>(this Node node, ref T cached) where T : Node {
@@ -30,6 +31,16 @@ public static class NodeExt {
         }
 
         return cached;
+    }
+    
+    public static T GetCached<T>(this Node parent, ref T cached, NodePath nodePath) where T : Node {
+        return cached ??= parent.GetNodeOrNull<T>(nodePath);
+    }
+
+    public static bool TryGetCached<T>(this Node parent, ref T cached, NodePath nodePath) where T : Node {
+        cached ??= parent.GetNodeOrNull<T>(nodePath);
+
+        return cached != null;
     }
 
     public static List<T> FindAllInChildrenByType<T>(this Node root, bool recursively = false) {
@@ -78,20 +89,34 @@ public static class NodeExt {
 
         return FindInParentsByType<T>(parent);
     }
+    
+    public static bool TryFindInParentsByType<T>(this Node child, out T outResult) {
+        outResult = child.FindInParentsByType<T>();
+
+        return outResult != null;
+    }
 
     public static void EnableNode(this Node node) {
-        node.CallDeferred(Node.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Inherit);
+        node.CallDeferred(GodotObject.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Inherit);
 
         if (node is Node2D node2D) {
             node2D.Show();
         }
+
+        if (node is CanvasItem canvasItem) {
+            canvasItem.Visible = true;
+        }
     }
 
     public static void DisableNode(this Node node) {
+        if (node is CanvasItem canvasItem) {
+            canvasItem.Visible = false;
+        }
+        
         if (node is Node2D node2D) {
             node2D.Hide();
         }
-        node.CallDeferred(Node.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Disabled);
+        node.CallDeferred(GodotObject.MethodName.Set, "process_mode", (long)Node.ProcessModeEnum.Disabled);
     }
 
     #endregion

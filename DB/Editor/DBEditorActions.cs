@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AssistLib.DB.Runtime;
+using c1tr00z.AssistLib.Common;
 using Godot;
 
 namespace AssistLib.DB.Editor;
@@ -35,10 +36,13 @@ public static class DBEditorActions {
                 
                 var asset = GD.Load(resourcePath);
 
-                if (asset is DBEntry) {
+                if (asset is DBEntry dbEntry) {
                     var data = new DBEntryData();
                     data.dbEntryName = assetName;
                     data.dbEntryPath = entryPath;
+
+                    TryCheckDefaultScene(dbEntry, entryPath);
+                    
                     entryData.Add(data);
                 }
             }
@@ -49,6 +53,36 @@ public static class DBEditorActions {
             ScanFolderAndCollect($"{pathToFolder}/{d}", out List<DBEntryData> otherData);
             entryData.AddRange(otherData);
         }
+    }
+
+    private static void TryCheckDefaultScene(DBEntry dbEntry, string entryPath) {
+
+        var scenePath = $"{entryPath}_scene.tscn";
+
+        if (!ResourceLoader.Exists(scenePath)) {
+            return;
+        }
+        
+        var defaultScene = GD.Load<PackedScene>(scenePath);
+        
+        var node = defaultScene.Instantiate<Node>();
+        var dbEntryResource = node.FindInChildrenByType<DBEntryResource>();
+
+        if (dbEntryResource == null) {
+            dbEntryResource = new DBEntryResource();
+            node.AddChild(dbEntryResource);
+            dbEntryResource.Name = "DBEntryResource";
+            dbEntryResource.Owner = node;
+        }
+        
+        dbEntryResource.dbEntry = dbEntry;
+        dbEntryResource.key = "scene.tscn";
+        
+        defaultScene.Pack(node);
+        
+        ResourceSaver.Singleton.Save(defaultScene, $"{entryPath}_scene.tscn", ResourceSaver.SaverFlags.ChangePath | ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
+        
+        node.QueueFree();
     }
 
     #endregion

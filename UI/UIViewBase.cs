@@ -7,7 +7,6 @@ using Array = System.Array;
 
 namespace c1tr00z.AssistLib.UI;
 
-[GlobalClass]
 public abstract partial class UIViewBase : Node2D {
 
     #region Events
@@ -21,6 +20,8 @@ public abstract partial class UIViewBase : Node2D {
     private List<UIViewBase> _parentViews = new();
 
     private object[] _args = Array.Empty<object>();
+    
+    private List<UIViewBase> _childViews = new ();
     
     #endregion
 
@@ -77,7 +78,7 @@ public abstract partial class UIViewBase : Node2D {
         
         OnArgs(args);
         
-        this.FindAllInChildrenByType<UIViewBase>().ForEach(v => v.ShowView(GetViewParams()));
+        UpdateChildViews();
     }
 
     protected abstract void OnArgs(params object[] args);
@@ -99,10 +100,16 @@ public abstract partial class UIViewBase : Node2D {
     protected virtual void OnHide() {}
 
     protected virtual void OnParentViewUpdated() { }
-
+    
+    public virtual void OnMouseEntered() { }
+    
+    public virtual void OnMouseExited() { }
+    
     protected virtual object[] GetViewParams() {
         return Array.Empty<object>();
     }
+
+    protected virtual void UpdateView() { }
     
     protected virtual Dictionary<StringName, object> GetViewNamedParams() {
         return new Dictionary<StringName, object>();
@@ -112,8 +119,11 @@ public abstract partial class UIViewBase : Node2D {
         Updated?.Invoke();
     }
 
-    protected bool TryGetCachedNodeFromPath<T>(ref T node, NodePath path) where T : Node {
-        return CommonExt.TryGetCached(ref node, () => GetNode<T>(path));
+    protected void UpdateChildViews() {
+        if (_childViews.Count == 0) {
+            _childViews = this.FindAllInChildrenByType<UIViewBase>();
+        }
+        _childViews.ForEach(v => v.ShowView(GetViewParams()));
     }
 
     #endregion

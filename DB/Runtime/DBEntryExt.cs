@@ -1,7 +1,9 @@
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using c1tr00z.AssistLib.Common;
 using Godot;
+using Godot.Collections;
 
 namespace AssistLib.DB.Runtime;
 
@@ -33,8 +35,17 @@ public static class DBEntryExt {
         return ResourceLoader.LoadThreadedGet($"{dbEntry.GetPath()}_{key}") as T;
     }
 
-    public static ResourceLoader.ThreadLoadStatus LoadThreadedStatus(this DBEntry dbEntry, string key) {
-        return ResourceLoader.LoadThreadedGetStatus($"{dbEntry.GetPath()}_{key}");
+    public static ResourceLoader.ThreadLoadStatus LoadThreadedStatus(this DBEntry dbEntry, string key, out double progress) {
+        var progressArray = new Array();
+        var status = ResourceLoader.LoadThreadedGetStatus($"{dbEntry.GetPath()}_{key}", progressArray);
+        var progressObject = progressArray.FirstOrDefault();
+        if (progressObject.VariantType == Variant.Type.Float) {
+            progress = progressObject.AsDouble();
+        } else {
+            progress = 0;
+        }
+
+        return status;
     }
 
     public static void LoadThreadedRequestScene(this DBEntry dbEntry) {
@@ -46,35 +57,58 @@ public static class DBEntryExt {
     }
 
     public static ResourceLoader.ThreadLoadStatus LoadThreadedStatusScene(this DBEntry dbEntry) {
-        return LoadThreadedStatus(dbEntry, "scene.tscn");
+        return LoadThreadedStatus(dbEntry, "scene.tscn", out double progress);
     }
 
     public static async Task<DBLoadResult<T>> LoadAsync<T>(this DBEntry dbEntry, string key) where T : Resource {
-        var status = LoadThreadedStatus(dbEntry, key);
-        var result = new DBLoadResult<T>();
+        var result = new DBLoadResult<T>(dbEntry, key);
 
-        if (status == ResourceLoader.ThreadLoadStatus.InvalidResource) {
-            dbEntry.LoadThreadedRequest(key);
-        }
-        
-        while (status == ResourceLoader.ThreadLoadStatus.InProgress) {
-            await Task.Delay(100);
-        }
-
-        if (status == ResourceLoader.ThreadLoadStatus.Failed) {
-            result.result = LoadResult.Failed;
-
-            return result;
-        }
-        
-        result.resource = dbEntry.LoadThreadedGet<T>(key);
-        result.result = LoadResult.Success;
+        await ProcessRequestAsync(result);
 
         return result;
     }
 
     public static async Task<DBLoadResult<PackedScene>> LoadSceneAsync(this DBEntry dbEntry) {
         return await dbEntry.LoadAsync<PackedScene>("scene.tscn");
+    }
+
+    private async static Task ProcessRequestAsync<T>(DBLoadResult<T> request) where T : Resource {
+        var dbEntry = request.dbEntry;
+        var key = request.key;
+        
+        var status = LoadThreadedStatus(dbEntry, key, out double progress);
+        if (status == ResourceLoader.ThreadLoadStatus.InvalidResource) {
+            dbEntry.LoadThreadedRequest(key);
+        }
+        
+        while (status == ResourceLoader.ThreadLoadStatus.InProgress) {
+            status = LoadThreadedStatus(dbEntry, key, out progress);
+            request.progress = progress;
+            await Task.Delay(100);
+        }
+        
+        if (status == ResourceLoader.ThreadLoadStatus.Failed) {
+            request.result = LoadResult.Failed;
+
+            return;
+        }
+        
+        request.progress = 1;
+        
+        request.resource = dbEntry.LoadThreadedGet<T>(key);
+        request.result = LoadResult.Success;
+    }
+
+    public static DBLoadResult<T> LoadRequestAsync<T>(this DBEntry dbEntry, string key) where T : Resource {
+        var result = new DBLoadResult<T>(dbEntry, key);
+
+        ProcessRequestAsync(result);
+        
+        return result;
+    }
+
+    public static DBLoadResult<PackedScene> LoadSceneRequestAsync(this DBEntry dbEntry) {
+        return dbEntry.LoadRequestAsync<PackedScene>("scene.tscn");
     }
 
     public static T GetCachedNodeDBEntry<T>(this Node node, ref T cached) where T : DBEntry {
