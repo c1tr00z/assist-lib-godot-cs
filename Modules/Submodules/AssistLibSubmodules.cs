@@ -1,16 +1,16 @@
 namespace c1tr00z.AssistLib.Modules.Submodules;
 
-public static class Submodules {
+public static class AssistLibSubmodules {
 
     #region Accessors
 
-    private static SubmodulesModule _submodules;
+    private static AssistLibSubmodulesModule _submodules;
 
     #endregion
 
     #region Class Implementation
 
-    public static void Init(SubmodulesModule submodules) {
+    public static void Init(AssistLibSubmodulesModule submodules) {
         _submodules = submodules;
     }
 

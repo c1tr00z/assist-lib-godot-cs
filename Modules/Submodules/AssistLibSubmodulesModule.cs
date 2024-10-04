@@ -4,7 +4,7 @@ using c1tr00z.AssistLib.Common;
 
 namespace c1tr00z.AssistLib.Modules.Submodules;
 
-public partial class SubmodulesModule : Module {
+public partial class AssistLibSubmodulesModule : Module {
     #region Private Fields
 
     private Dictionary<Type, Submodule> _submodules = new();
@@ -21,7 +21,7 @@ public partial class SubmodulesModule : Module {
             AddChild(submodule);
             _submodules.Add(submoduleType, submodule);
         }
-        Submodules.Init(this);
+        AssistLibSubmodules.Init(this);
     }
 
     #endregion

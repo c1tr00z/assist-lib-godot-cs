@@ -4,7 +4,7 @@ namespace c1tr00z.AssistLib.Modules.Submodules;
 
 public abstract partial class Submodule : Node { }
 
-public abstract partial class Submodule<T> : Submodule where T : Module {
+public abstract partial class AssistLibSubmodule<T> : Submodule where T : Module {
 
     #region Private Fields
 
