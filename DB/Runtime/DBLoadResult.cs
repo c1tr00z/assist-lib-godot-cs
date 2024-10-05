@@ -33,7 +33,7 @@ public class DBLoadResult<T> where T : Resource {
     
     public string key { get; }
 
-    public string assetName => $"{dbEntry.GetPath()}_{key}";
+    public string assetName => $"{dbEntry.GetDBEntryPath()}_{key}";
 
     #endregion
 }

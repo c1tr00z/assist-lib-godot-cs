@@ -72,7 +72,7 @@ public static class JSONUtils {
             serializable.Serialize(valueJson);
             returnValue = valueJson;
         } else if (value is DBEntry dbEntry) {
-            returnValue = dbEntry.GetName();
+            returnValue = dbEntry.GetDBEntryName();
         } else if (value is Vector4 vector4) {
             returnValue = vector4.ToString();
         } else if (value is Vector3 vector3) {

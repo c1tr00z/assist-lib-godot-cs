@@ -43,7 +43,7 @@ public abstract partial class UILayerBase : Node2D {
         var frameResult = await frameDBEntry.LoadSceneAsync();
 
         if (frameResult.result == LoadResult.Failed) {
-            GD.PushError($"[GUI] Error loading ui frame scene for {frameDBEntry.GetName()}");
+            GD.PushError($"[GUI] Error loading ui frame scene for {frameDBEntry.GetDBEntryName()}");
             return;
         }
 

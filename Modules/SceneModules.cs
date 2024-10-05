@@ -50,11 +50,11 @@ public partial class SceneModules : Node {
 			var module = modulesDbEntry.LoadScene().Instantiate<SceneModule>();
 
 			if (module == null) {
-				GD.PushError($"[SceneModules] No module for {modulesDbEntry.GetPath()}");
+				GD.PushError($"[SceneModules] No module for {modulesDbEntry.GetDBEntryPath()}");
 				continue;
 			}
 
-			module.Name = modulesDbEntry.GetName() + GD.Randi();
+			module.Name = modulesDbEntry.GetDBEntryName() + GD.Randi();
 			
 			AddChild(module);
 			
