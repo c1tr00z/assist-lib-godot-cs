@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AssistLib.DB.Runtime;
@@ -50,7 +51,7 @@ public partial class SceneModules : Node {
 			var module = modulesDbEntry.LoadScene().Instantiate<SceneModule>();
 
 			if (module == null) {
-				GD.PushError($"[SceneModules] No module for {modulesDbEntry.GetPath()}");
+				GD.PushError($"[SceneModules] No module for {modulesDbEntry.GetDBEntryPath()}");
 				continue;
 			}
 
@@ -68,6 +69,12 @@ public partial class SceneModules : Node {
 
 	public bool TryGet<T>(out T module) where T : Module {
 		module = _sceneModules.OfType<T>().FirstOrDefault();
+
+		return module != null;
+	}
+	
+	public bool TryGet(Type type, out Module module) {
+		module = _sceneModules .FirstOrDefault(m => m.GetType() == type);
 
 		return module != null;
 	}

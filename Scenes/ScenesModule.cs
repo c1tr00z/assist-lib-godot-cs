@@ -6,7 +6,7 @@ using c1tr00z.AssistLib.Modules;
 using c1tr00z.AssistLib.UI;
 using Godot;
 
-namespace projectwitch.addons.AssistLib.Scenes;
+namespace c1tr00z.AssistLib.Scenes;
 
 [GlobalClass]
 public partial class ScenesModule : Module {
@@ -54,6 +54,7 @@ public partial class ScenesModule : Module {
         if (_currentRequest != null && _currentRequest.result == LoadResult.Loading) {
             return;
         }
+        
         _requests.Enqueue(dbEntry);
 
         ProcessLoad();
@@ -68,15 +69,17 @@ public partial class ScenesModule : Module {
 
         while (_requests.Count > 0) {
             var dbEntry = _requests.Dequeue();
-
+            
             settings.loadingScreenFrame?.Show();
 
             LoadingStarted?.Invoke(dbEntry);
 
             var startTime = Time.Singleton.GetUnixTimeFromSystem();
             var currentTime = startTime;
-            
-            GetTree().UnloadCurrentScene();
+
+            if (settings.unloadCurrentSceneBeforeLoading) {
+                GetTree().UnloadCurrentScene();
+            }
 
             var request = dbEntry.LoadSceneRequestAsync();
 

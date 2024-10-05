@@ -11,16 +11,16 @@ public static class DBEntryExt {
     
     #region Class Implementation
 
-    public static string GetName(this DBEntry dbEntry) {
+    public static string GetDBEntryName(this DBEntry dbEntry) {
         return DB.GetDBEntryName(dbEntry);
     }
 
-    public static string GetPath(this DBEntry dbEntry) {
+    public static string GetDBEntryPath(this DBEntry dbEntry) {
         return DB.GetDBEntryPath(dbEntry);
     }
 
     public static T Load<T>(this DBEntry dbEntry, string key) where T : Resource {
-        return GD.Load<T>($"{dbEntry.GetPath()}_{key}");
+        return GD.Load<T>($"{dbEntry.GetDBEntryPath()}_{key}");
     }
 
     public static PackedScene LoadScene(this DBEntry dbEntry) {
@@ -28,16 +28,16 @@ public static class DBEntryExt {
     }
     
     public static void LoadThreadedRequest(this DBEntry dbEntry, string key) {
-        ResourceLoader.LoadThreadedRequest($"{dbEntry.GetPath()}_{key}");
+        ResourceLoader.LoadThreadedRequest($"{dbEntry.GetDBEntryPath()}_{key}");
     }
     
     public static T LoadThreadedGet<T>(this DBEntry dbEntry, string key) where T : Resource {
-        return ResourceLoader.LoadThreadedGet($"{dbEntry.GetPath()}_{key}") as T;
+        return ResourceLoader.LoadThreadedGet($"{dbEntry.GetDBEntryPath()}_{key}") as T;
     }
 
     public static ResourceLoader.ThreadLoadStatus LoadThreadedStatus(this DBEntry dbEntry, string key, out double progress) {
         var progressArray = new Array();
-        var status = ResourceLoader.LoadThreadedGetStatus($"{dbEntry.GetPath()}_{key}", progressArray);
+        var status = ResourceLoader.LoadThreadedGetStatus($"{dbEntry.GetDBEntryPath()}_{key}", progressArray);
         var progressObject = progressArray.FirstOrDefault();
         if (progressObject.VariantType == Variant.Type.Float) {
             progress = progressObject.AsDouble();
@@ -79,8 +79,10 @@ public static class DBEntryExt {
         var status = LoadThreadedStatus(dbEntry, key, out double progress);
         if (status == ResourceLoader.ThreadLoadStatus.InvalidResource) {
             dbEntry.LoadThreadedRequest(key);
+            await Task.Delay(100);
         }
         
+        status = LoadThreadedStatus(dbEntry, key, out progress);
         while (status == ResourceLoader.ThreadLoadStatus.InProgress) {
             status = LoadThreadedStatus(dbEntry, key, out progress);
             request.progress = progress;
@@ -94,7 +96,7 @@ public static class DBEntryExt {
         }
         
         request.progress = 1;
-        
+
         request.resource = dbEntry.LoadThreadedGet<T>(key);
         request.result = LoadResult.Success;
     }

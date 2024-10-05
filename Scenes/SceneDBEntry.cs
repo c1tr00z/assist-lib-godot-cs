@@ -1,7 +1,7 @@
 using AssistLib.DB.Runtime;
 using Godot;
 
-namespace projectwitch.addons.AssistLib.Scenes;
+namespace c1tr00z.AssistLib.Scenes;
 
 [Tool]
 [GlobalClass]

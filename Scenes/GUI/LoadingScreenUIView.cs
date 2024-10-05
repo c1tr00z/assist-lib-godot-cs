@@ -4,7 +4,7 @@ using c1tr00z.AssistLib.UI;
 using Godot;
 using Godot.Collections;
 
-namespace projectwitch.addons.AssistLib.Scenes.GUI;
+namespace c1tr00z.AssistLib.Scenes.GUI;
 
 [GlobalClass]
 public partial class LoadingScreenUIView : UIViewBase {
@@ -78,7 +78,7 @@ public partial class LoadingScreenUIView : UIViewBase {
     }
 
     public void HideLoadingScreen() {
-        Modules.Get<ScenesModule>().HideLoadingScreen();
+        Modules.Modules.Get<ScenesModule>().HideLoadingScreen();
     }
 
     #endregion
