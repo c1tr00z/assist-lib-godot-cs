@@ -65,7 +65,7 @@ public partial class GfxManager : SceneModule {
             var gfx = await GetGfx(request.dbEntry);
             if (request is GfxRequest2D request2D) {
                 (gfx as Node2D).GlobalPosition = request2D.position;
-                (gfx as GpuParticles2D).Restart();
+                (gfx as Gfx2D).Play();
             }
         }
 
