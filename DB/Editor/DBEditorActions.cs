@@ -17,7 +17,7 @@ public static class DBEditorActions {
         
         entryData.ForEach(entryData => GD.Print($"Found: {entryData.dbEntryName} at {entryData.dbEntryPath}"));
 
-        var db = GD.Load<DBCollection>("res://db/db.tres");
+        var db = GD.Load<DBCollection>("res://DB/db.tres");
         db.dbEntryDatas = entryData.ToArray();
         ResourceSaver.Singleton.Save(db, db.ResourcePath);
     }
