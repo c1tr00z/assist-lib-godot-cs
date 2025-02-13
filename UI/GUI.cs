@@ -34,7 +34,7 @@ public partial class GUI : Module {
         allLayersDbEntries.Sort((l1, l2) => Mathf.Sign(l1.index - l2.index));
         allLayersDbEntries.ForEach(layerDbEntry => {
             var layer = layerDbEntry.LoadScene().Instantiate<UILayerBase>();
-            layer.Name = layerDbEntry.GetName();
+            layer.Name = layerDbEntry.GetDBEntryName();
             AddChild(layer);
             _layers.Add(layer.dbEntry, layer);
             layer.canvasLayer.Layer = layerDbEntry.index;
@@ -61,7 +61,7 @@ public partial class GUI : Module {
 
     public void HideFrame(UIFrameDBEntry frameDbEntry) {
         if (!_layers.TryGetValue(frameDbEntry.layer, out UILayerBase layer)) {
-            GD.PushError($"No layer with DB Entry {frameDbEntry.layer?.GetName()}");
+            GD.PushError($"No layer with DB Entry {frameDbEntry.layer?.GetDBEntryName()}");
             return;
         }
         
@@ -70,7 +70,7 @@ public partial class GUI : Module {
 
     public void HideFrame(UIFrame uiFrame) {
         if (!_layers.TryGetValue(uiFrame.dbEntry.layer, out UILayerBase layer)) {
-            GD.PushError($"No layer with DB Entry {uiFrame.dbEntry.layer?.GetName()}");
+            GD.PushError($"No layer with DB Entry {uiFrame.dbEntry.layer?.GetDBEntryName()}");
             return;
         }
         
@@ -84,7 +84,7 @@ public partial class GUI : Module {
             var request = _requests.Dequeue();
 
             if (!_layers.TryGetValue(request.frameDbEntry.layer, out UILayerBase layer)) {
-                GD.PushError($"No layer with DB Entry {request.frameDbEntry.layer?.GetName()}");
+                GD.PushError($"No layer with DB Entry {request.frameDbEntry.layer?.GetDBEntryName()}");
                 continue;
             }
 

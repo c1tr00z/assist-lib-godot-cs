@@ -113,5 +113,13 @@ public static class IEnumerationExt {
         return list.MinElements(selector).FirstOrDefault();
     }
 
+    public static Queue<T> ToQueue<T>(this IEnumerable<T> items) {
+        var queue = new Queue<T>();
+        foreach (var item in items) {
+            queue.Enqueue(item);
+        }
+        return queue;
+    }
+
     #endregion
 }

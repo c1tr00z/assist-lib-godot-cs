@@ -26,7 +26,9 @@ public partial class AssistLibPlugin : EditorPlugin {
             }
         }
 
-        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_mainPanelInstance);
+        AddControlToDock(DockSlot.RightUr, _mainPanelInstance);
+        // TODO: Temporarily commented out adding panel to editor main screen. Need to add it as settings later
+        // EditorInterface.Singleton.GetEditorMainScreen().AddChild(_mainPanelInstance);
         _MakeVisible(false);
     }
 
@@ -35,6 +37,7 @@ public partial class AssistLibPlugin : EditorPlugin {
             if (_mainPanelInstance is AssistLibToolsPanel toolsPanel) {
                 toolsPanel.SaveTools();
             }
+            RemoveControlFromDocks(_mainPanelInstance);
             _mainPanelInstance.QueueFree();
         }
     }

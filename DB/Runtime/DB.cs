@@ -19,7 +19,7 @@ public static class DB {
 
     private static Dictionary<DBEntry, DBEntryData> GetAllDic() {
         if (_entries.Count == 0) {
-            var collection = GD.Load<DBCollection>("res://db/db.tres");
+            var collection = GD.Load<DBCollection>("res://DB/db.tres");
             _entries = collection.dbEntryDatas.ToDictionary(d => GD.Load<DBEntry>($"{d.dbEntryPath}.tres"), d => d);
         }
 

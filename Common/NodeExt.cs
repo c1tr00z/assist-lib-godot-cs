@@ -17,6 +17,12 @@ public static class NodeExt {
         return cached;
     }
 
+    public static T GetCachedInChildren<T>(this Node node, ref T cached, NodePath nodePath) where T : Node {
+        cached ??= node.GetNodeOrNull<T>(nodePath);
+
+        return cached;
+    }
+
     public static T GetCachedInParents<T>(this Node node, ref T cached) where T : Node {
         if (cached == null) {
             cached = FindInParentsByType<T>(node);
