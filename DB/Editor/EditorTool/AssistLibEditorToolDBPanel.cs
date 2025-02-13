@@ -4,7 +4,7 @@ namespace AssistLib.DB.Editor.EditorTool;
 
 [Tool]
 [GlobalClass]
-public partial class AssistLibEditorToolDBPanel : Control {
+public partial class AssistLibEditorToolDBPanel : VBoxContainer {
 
     #region Class Implementation
 

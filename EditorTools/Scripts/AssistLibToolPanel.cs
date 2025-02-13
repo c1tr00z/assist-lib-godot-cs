@@ -3,7 +3,7 @@ using Godot;
 
 namespace projectwitch.addons.AssistLib.EditorTools.Scripts;
 
-public abstract partial class AssistLibToolPanel<T> : Control where T : AssistLibEditorTool {
+public abstract partial class AssistLibToolPanel<T> : VBoxContainer where T : AssistLibEditorTool {
 
     #region Private Fields
 
