@@ -25,6 +25,12 @@ public static class DB {
 
         return _entries;
     }
+
+#if TOOLS
+    public static void ForceReload() {
+        _entriesList = GetAllDic().Keys.ToList();
+    }
+#endif
     
     private static List<DBEntry> GetAllList() {
         if (_entriesList.Count == 0) {

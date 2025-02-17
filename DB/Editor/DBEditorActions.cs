@@ -1,6 +1,5 @@
 #if TOOLS
 using System.Collections.Generic;
-using System.Linq;
 using AssistLib.DB.Runtime;
 using c1tr00z.AssistLib.Common;
 using Godot;
@@ -20,6 +19,7 @@ public static class DBEditorActions {
         var db = GD.Load<DBCollection>("res://DB/db.tres");
         db.dbEntryDatas = entryData.ToArray();
         ResourceSaver.Singleton.Save(db, db.ResourcePath);
+        Runtime.DB.ForceReload();
     }
 
     private static void ScanFolderAndCollect(string pathToFolder, out List<DBEntryData> entryData) {
