@@ -10,7 +10,7 @@ public static class StringExt {
         return string.IsNullOrEmpty(str);
     }
 
-    public static string snakeCaseToCamelCase(this string str) {
+    public static string SnakeCaseToCamelCase(this string str) {
         var substrings = str.Split('_');
         var builder = new StringBuilder();
         foreach (var substring in substrings) {
@@ -23,7 +23,7 @@ public static class StringExt {
             }
 
             if (substring.Length > 1) {
-                substringCamelCase += substring[1].ToString().ToLower();
+                substringCamelCase += substring.Substring(1).ToLower();
             }
 
             builder.Append(substringCamelCase);
