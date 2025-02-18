@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AssistLib.DB.Runtime;
@@ -47,22 +48,28 @@ public partial class SceneModules : Node {
 
 	private async void InitModules() {
 		foreach (var modulesDbEntry in modulesCollection.modulesDbEntries) {
-			var module = modulesDbEntry.LoadScene().Instantiate<SceneModule>();
+			try {
+				var module = modulesDbEntry.LoadScene().Instantiate<SceneModule>();
 
-			if (module == null) {
-				GD.PushError($"[SceneModules] No module for {modulesDbEntry.GetDBEntryPath()}");
-				continue;
+				if (module == null) {
+					GD.PushError($"[SceneModules] No module for {modulesDbEntry.GetDBEntryPath()}");
+					continue;
+				}
+
+				module.Name = modulesDbEntry.GetDBEntryName() + GD.Randi();
+			
+				AddChild(module);
+			
+				_sceneModules.Add(module);
+
+				await module.Init();
+			
+				_sceneModules.Add(module);
+			} catch (Exception e) {
+				GD.PushError($"Problem with loading {modulesDbEntry.GetDBEntryName()}");
+				GD.PushError(e);
 			}
-
-			module.Name = modulesDbEntry.GetDBEntryName() + GD.Randi();
 			
-			AddChild(module);
-			
-			_sceneModules.Add(module);
-
-			await module.Init();
-			
-			_sceneModules.Add(module);
 		}
 	}
 

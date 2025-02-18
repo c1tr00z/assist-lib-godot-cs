@@ -13,6 +13,12 @@ public partial class AssistLibEditorToolDBPanel : VBoxContainer {
         DBEditorActions.CollectDBEntries();
 #endif
     }
+    
+    public void ForceReload() {
+#if TOOLS
+        Runtime.DB.ForceReload();
+#endif
+    }
 
     #endregion
 }

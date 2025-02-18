@@ -13,4 +13,9 @@ text = ">DB Tool"
 layout_mode = 2
 text = "Collect DB Entries"
 
+[node name="DBForceReloadButton" type="Button" parent="."]
+layout_mode = 2
+text = "Force reload"
+
 [connection signal="pressed" from="CollectDBEntriesButton" to="." method="CollectDBEntries"]
+[connection signal="pressed" from="DBForceReloadButton" to="." method="ForceReload"]
