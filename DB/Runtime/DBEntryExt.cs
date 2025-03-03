@@ -119,5 +119,13 @@ public static class DBEntryExt {
         return cached;
     }
 
+    public static T GetCachedDBEntry<T>(ref T cached, string dbEntryName = null) where T : DBEntry {
+        if (cached == null) {
+            cached = DB.Get<T>(dbEntryName);
+        }
+
+        return cached;
+    }
+
     #endregion
 }
