@@ -15,6 +15,8 @@ public class EditorToolsController {
 
     public static event Action RequestData;
 
+    public static event Action<AssistLibEditorTool> ToolRemoved; 
+
     #endregion
     
     #region Private Fields
@@ -28,6 +30,8 @@ public class EditorToolsController {
     private List<Type> _toolsSaveTypes = new();
     
     private List<Type> _toolsTypes = new();
+
+    private List<AssistLibEditorTool> _tools = new();
 
     #endregion
 
@@ -97,6 +101,20 @@ public class EditorToolsController {
         });
         var jsonString = _toolsData.ToJsonString();
         AssistLibEditorSettings.Set(SAVE_KEY, jsonString);
+    }
+
+    public void Remove(AssistLibEditorTool tool) {
+        var toolDataType = tool.GetType().BaseType.GenericTypeArguments.FirstOrDefault();
+        var toolSaveData = _toolsData.toolsData.FirstOrDefault(save => toolDataType == save.GetType());
+        if (toolSaveData is not null) {
+            _toolsData.toolsData.Remove(toolSaveData);
+        }
+
+        if (_tools.Contains(tool)) {
+            _tools.Remove(tool);
+        }
+        
+        ToolRemoved?.Invoke(tool);
     }
 
     #endregion

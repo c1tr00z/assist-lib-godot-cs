@@ -13,12 +13,6 @@ public abstract class AssistLibEditorTool {
     
     #endregion
 
-    #region Accessors
-
-    public abstract string panelPath { get; }
-
-    #endregion
-
     #region Class Implementation
 
     public abstract IEditorToolData GetSaveData();

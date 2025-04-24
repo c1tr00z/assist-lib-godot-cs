@@ -1,21 +1,35 @@
+using System.Linq;
+using System.Reflection;
 using c1tr00z.AssistLib.Common;
 using Godot;
 
 namespace projectwitch.addons.AssistLib.EditorTools.Scripts;
 
-public abstract partial class AssistLibToolPanel<T> : VBoxContainer where T : AssistLibEditorTool {
+public abstract partial class AssistLibToolPanel<T> : VBoxContainer, IAssistLibToolPanel where T : AssistLibEditorTool {
 
     #region Private Fields
 
     private T _tool;
 
+    private string _toolTitle = null;
+
     #endregion
     
     #region Accessors
 
-    protected T tool => CommonExt.GetCached(ref _tool, EditorToolsController.Get<T>);
+    protected T editorTool => CommonExt.GetCached(ref _tool, EditorToolsController.Get<T>);
 
     protected bool isPanelActive => this.FindInParentsByType<AssistLibToolsPanel>() != null;
+
+    protected string toolTitle => CommonExt.GetCached(ref _toolTitle, () => {
+        var toolType = tool.GetType();
+        var attribute = toolType.GetCustomAttributes<EditorToolAttribute>().FirstOrDefault();
+        if (attribute is null) {
+            return toolType.Name;
+        }
+
+        return attribute.toolTitle;
+    });
 
     #endregion
 
@@ -25,7 +39,7 @@ public abstract partial class AssistLibToolPanel<T> : VBoxContainer where T : As
         base._EnterTree();
         EditorToolsController.RequestData += OnRequestToolData;
         AssistLibEditorTool.ToolLoaded += OnPanelToolLoaded;
-        OnPanelToolLoaded(tool);
+        OnPanelToolLoaded(editorTool);
     }
 
     public override void _ExitTree() {
@@ -33,6 +47,12 @@ public abstract partial class AssistLibToolPanel<T> : VBoxContainer where T : As
         AssistLibEditorTool.ToolLoaded -= OnPanelToolLoaded;
         base._ExitTree();
     }
+
+    #endregion
+
+    #region IAssistLibToolPanel Implementation
+
+    public AssistLibEditorTool tool => editorTool;
 
     #endregion
 
@@ -56,6 +76,10 @@ public abstract partial class AssistLibToolPanel<T> : VBoxContainer where T : As
     }
     
     protected abstract void OnToolLoaded(AssistLibEditorTool tool);
+
+    protected void RemoveTool() {
+        EditorToolsController.instance.Remove(tool);
+    }
 
     #endregion
 }

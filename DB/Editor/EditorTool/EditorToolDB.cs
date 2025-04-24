@@ -5,11 +5,11 @@ using projectwitch.addons.AssistLib.EditorTools.Scripts;
 namespace AssistLib.DB.Editor.EditorTool;
 
 [Tool]
-public class EditorToolDB : AssistLibEditorTool<EditorToolDBSaveData> {
+public class EditorToolDB : AssistLibEditorTool<EditorToolDBSaveData>, IEditorToolPredefinedScene {
 
     #region AssistLibEditorTool Implementation
 
-    public override string panelPath => "res://addons/AssistLib/DB/Editor/EditorTool/Scenes/assist_lib_db_panel.tscn";
+    public string panelPath => "res://addons/AssistLib/DB/Editor/EditorTool/Scenes/assist_lib_db_panel.tscn";
 
     protected override EditorToolDBSaveData GetMySaveData() {
         return new EditorToolDBSaveData();
