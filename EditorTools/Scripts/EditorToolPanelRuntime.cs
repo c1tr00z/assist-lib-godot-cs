@@ -41,10 +41,9 @@ public abstract partial class EditorToolPanelRuntime<T> : AssistLibToolPanel<T>,
         horizontalContainer.AddChild(titleLabel);
 
         _closeButton = new Button();
-        _closeButton.Text = "X===";
+        _closeButton.Text = "X";
         _closeButton.Size = new Vector2(48, _closeButton.Size.Y);
         _closeButton.Pressed += RemoveTool;
-        GD.PushError($"SUBSCRIBED ->>>>>");
         horizontalContainer.AddChild(_closeButton);
         
         return horizontalContainer;

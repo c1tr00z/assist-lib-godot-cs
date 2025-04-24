@@ -33,12 +33,10 @@ public partial class AssistLibToolsPanel : VBoxContainer {
     public override void _EnterTree() {
         base._EnterTree();
         EditorToolsController.ToolRemoved += OnToolRemoved;
-        GD.PushError("SUBSCRIBED");
     }
 
     public override void _ExitTree() {
         EditorToolsController.ToolRemoved -= OnToolRemoved;
-        GD.PushError("UNSUBSCRIBED");
         base._ExitTree();
     }
 
