@@ -10,18 +10,6 @@ public abstract partial class EditorToolPanelRuntime<T> : AssistLibToolPanel<T>,
     private Button _closeButton;
 
     #endregion
-
-    #region Node Implementation
-
-    // public override void _ExitTree() {
-    //     if (_closeButton != null) {
-    //         _closeButton.Pressed -= RemoveTool;
-    //         GD.PushError($"UNSUBSCRIBED ->>>>>");
-    //     }
-    //     base._ExitTree();
-    // }
-
-    #endregion
     
     #region Class Implementation
 

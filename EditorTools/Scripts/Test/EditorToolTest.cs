@@ -2,6 +2,7 @@ using System;
 
 namespace projectwitch.addons.AssistLib.EditorTools.Scripts;
 
+[EditorTool("Test tool")]
 public class EditorToolTest : AssistLibEditorTool<EditorToolTestData>, IEditorToolRuntimeUI {
     #region AssistLibEditorTool Implementation
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using c1tr00z.AssistLib.Common;
 using Godot;
 
@@ -20,11 +21,15 @@ public partial class AssistLibToolsPanel : VBoxContainer {
 
     private List<Node> _toolsPanels = new();
 
+    private OptionButton _toolsListButton = null;
+
     #endregion
     
     #region Export Fields
     
     [Export] private NodePath _toolsListNodePath;
+
+    [Export] private NodePath _toolsListButtonPath;
 
     #endregion
 
@@ -32,10 +37,12 @@ public partial class AssistLibToolsPanel : VBoxContainer {
 
     public override void _EnterTree() {
         base._EnterTree();
+        EditorToolsController.ToolAdded += AddPanelFor;
         EditorToolsController.ToolRemoved += OnToolRemoved;
     }
 
     public override void _ExitTree() {
+        EditorToolsController.ToolAdded -= AddPanelFor;
         EditorToolsController.ToolRemoved -= OnToolRemoved;
         base._ExitTree();
     }
@@ -45,25 +52,12 @@ public partial class AssistLibToolsPanel : VBoxContainer {
     #region Class Implementation
 
     public void InitToolsPanels() {
-        EditorToolsController.instance.tools.ForEach(t => {
-            Node panelNode = null;
-            if (t is IEditorToolPredefinedScene withPredefined) {
-                panelNode = MakePanel(withPredefined);
-            } else if (t is IEditorToolRuntimeUI withRuntime) {
-                panelNode = MakePanel(withRuntime);
-            } else {
-                throw new Exception($"Tool panel class has to implement IEditorToolPredefinedScene or " +
-                                    $"IEditorToolRuntimeUI: panel type - {t.GetType().FullName}");
-            }
-            _toolsPanels.Add(panelNode);
-            AddChild(panelNode);
-            // var panel = GD.Load<PackedScene>(t.panelPath).Instantiate();
-            // _toolsContainer.AddChild(panel);
-        });
-        
-        // if (this.TryGetCached(ref _toolsListNode, _toolsListNodePath)) {
-        //     _toolsListNode.SetSize(new Vector2(_toolsListNode.Size.X, _defaultPanelHeight));
-        // }
+        EditorToolsController.instance.tools.ForEach(AddPanelFor);
+        var allToolsTypes = EditorToolsController.instance.allToolsTypes;
+        if (allToolsTypes.Count > 0 && this.TryGetCached(ref _toolsListButton, _toolsListButtonPath)) {
+            _toolsListButton.Clear();
+            allToolsTypes.Keys.ToList().ForEach(toolName => _toolsListButton.AddItem(toolName));
+        }
     }
 
     private Node MakePanel(IEditorToolPredefinedScene toolWithPredefinedScene) {
@@ -107,6 +101,29 @@ public partial class AssistLibToolsPanel : VBoxContainer {
         var panelNode = toolsPanel as Node;
         _toolsPanels.Remove(panelNode);
         RemoveChild(panelNode);
+    }
+
+    public void AddSelectedTool() {
+        if (this.TryGetCached(ref _toolsListButton, _toolsListButtonPath)) {
+            var toolName = _toolsListButton.GetItemText(_toolsListButton.Selected);
+            if (EditorToolsController.instance.allToolsTypes.TryGetValue(toolName, out Type toolType)) {
+                EditorToolsController.instance.AddTool(toolType);
+            }
+        }
+    }
+
+    private void AddPanelFor(AssistLibEditorTool tool) {
+        Node panelNode = null;
+        if (tool is IEditorToolPredefinedScene withPredefined) {
+            panelNode = MakePanel(withPredefined);
+        } else if (tool is IEditorToolRuntimeUI withRuntime) {
+            panelNode = MakePanel(withRuntime);
+        } else {
+            throw new Exception($"Tool panel class has to implement IEditorToolPredefinedScene or " +
+                                $"IEditorToolRuntimeUI: panel type - {tool.GetType().FullName}");
+        }
+        _toolsPanels.Add(panelNode);
+        AddChild(panelNode);
     }
 
     #endregion
