@@ -21,7 +21,13 @@ public abstract partial class EditorToolPanelRuntime<T> : AssistLibToolPanel<T>,
     }
 
     private Node BuildHeaderPanel() {
+        var headerContainer = new PanelContainer();
+        headerContainer.AddThemeStyleboxOverride(EditorToolsPanelsConstants.PANEL_HEADER_STYLE_NAME,
+            EditorToolsPanelsConstants.PANEL_HEADER_STYLE);
         var horizontalContainer = new HBoxContainer();
+        headerContainer.AddChild(horizontalContainer);
+        horizontalContainer.LayoutMode = 2;
+        horizontalContainer.AnchorsPreset = (int)LayoutPreset.FullRect;
         
         var titleLabel = new Label();
         titleLabel.Text = toolTitle;
@@ -34,7 +40,7 @@ public abstract partial class EditorToolPanelRuntime<T> : AssistLibToolPanel<T>,
         _closeButton.Pressed += RemoveTool;
         horizontalContainer.AddChild(_closeButton);
         
-        return horizontalContainer;
+        return headerContainer;
     }
 
     protected abstract void BuildPanelWidgets();
