@@ -10,8 +10,6 @@ public static class EditorToolsPanelsConstants {
         BgColor = new Color("141414FF"),
         ContentMarginLeft = 10,
         ContentMarginRight = 10,
-        ExpandMarginTop = 10,
-        ExpandMarginBottom = 10,
     };
 
     #endregion

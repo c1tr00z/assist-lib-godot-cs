@@ -124,6 +124,7 @@ public partial class AssistLibToolsPanel : VBoxContainer {
         }
         _toolsPanels.Add(panelNode);
         AddChild(panelNode);
+        AddChild(new HSeparator());
     }
 
     #endregion

@@ -15,9 +15,8 @@ public abstract partial class EditorToolPanelRuntime<T> : AssistLibToolPanel<T>,
 
     public void BuildPanel() {
         SizeFlagsHorizontal = SizeFlags.ExpandFill;
-        AddChild(new HSeparator());
         AddChild(BuildHeaderPanel());
-        AddChild(new HSeparator());
+        BuildPanelWidgets();
     }
 
     private Node BuildHeaderPanel() {
