@@ -29,12 +29,8 @@ public class EditorToolsController {
     private static EditorToolsController _instance;
 
     private EditorToolsData _toolsData;
-
-    private List<Type> _toolsSaveTypes = new();
     
     private List<Type> _toolsTypes = new();
-
-    private List<AssistLibEditorTool> _tools = new();
 
     private Dictionary<String, Type> _allToolsTypes = new();
 
@@ -75,7 +71,6 @@ public class EditorToolsController {
     private void Init() {
         if (_toolsTypes.Count == 0) {
             _toolsTypes = ReflectionUtils.GetSubclassesOf<AssistLibEditorTool>(false);
-            _toolsSaveTypes = ReflectionUtils.GetTypesByInterface<IEditorToolData>(false);
         }
         var jsonString = AssistLibEditorSettings.Get<string>(SAVE_KEY);
         if (jsonString.IsNullOrEmpty()) {
@@ -90,9 +85,6 @@ public class EditorToolsController {
             var toolType = allToolsTypesList.FirstOrDefault(t => t.GetGenericArguments().Contains(dataType) || t.BaseType.GetGenericArguments().Contains(dataType));
             AddTool(toolType);
         });
-        
-        // var allTypes = ReflectionUtils.GetSubclassesOf<AssistLibEditorTool>(false);
-        // allTypes.ForEach(AddTool);
     }
 
     public T GetTool<T>() where T : AssistLibEditorTool {
@@ -110,6 +102,7 @@ public class EditorToolsController {
             _toolsData.toolsData.Add(t.GetSaveData());
         });
         var jsonString = _toolsData.ToJsonString();
+        GD.PushError($"SAVING:\r\n {jsonString}");
         AssistLibEditorSettings.Set(SAVE_KEY, jsonString);
     }
 
@@ -137,14 +130,19 @@ public class EditorToolsController {
     }
 
     public void Remove(AssistLibEditorTool tool) {
+        
+        GD.PushError($"TRYING TO REMOVE TOOL: {tool}");
+        
         var toolDataType = tool.GetType().BaseType.GenericTypeArguments.FirstOrDefault();
         var toolSaveData = _toolsData.toolsData.FirstOrDefault(save => toolDataType == save.GetType());
+        GD.PushError($"TOOL SAVE DATA: {toolSaveData}");
         if (toolSaveData is not null) {
             _toolsData.toolsData.Remove(toolSaveData);
         }
 
-        if (_tools.Contains(tool)) {
-            _tools.Remove(tool);
+        if (tools.Contains(tool)) {
+            GD.PushError($"REMOVE TOOL: {tool}");
+            tools.Remove(tool);
         }
         
         SaveTools();
