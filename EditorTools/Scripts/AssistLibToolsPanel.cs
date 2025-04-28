@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using c1tr00z.AssistLib.Common;
 using Godot;
 
@@ -5,11 +9,9 @@ namespace projectwitch.addons.AssistLib.EditorTools.Scripts;
 
 [GlobalClass]
 [Tool]
-public partial class AssistLibToolsPanel : Control {
+public partial class AssistLibToolsPanel : VBoxContainer {
 
     #region Private Fields
-
-    private Node _toolsContainer;
 
     private Control _toolsListNode;
 
@@ -17,29 +19,58 @@ public partial class AssistLibToolsPanel : Control {
 
     private float _panelHeightDelta = 0;
 
+    private List<Node> _toolsPanels = new();
+
+    private OptionButton _toolsListButton = null;
+
     #endregion
     
     #region Export Fields
-
-    [Export] private NodePath _toolsContainerPath;
     
     [Export] private NodePath _toolsListNodePath;
+
+    [Export] private NodePath _toolsListButtonPath;
+
+    #endregion
+
+    #region Node Implementation
+
+    public override void _EnterTree() {
+        base._EnterTree();
+        EditorToolsController.ToolAdded += AddPanelFor;
+        EditorToolsController.ToolRemoved += OnToolRemoved;
+    }
+
+    public override void _ExitTree() {
+        EditorToolsController.ToolAdded -= AddPanelFor;
+        EditorToolsController.ToolRemoved -= OnToolRemoved;
+        base._ExitTree();
+    }
 
     #endregion
 
     #region Class Implementation
 
     public void InitToolsPanels() {
-        if (this.TryGetCached(ref _toolsContainer, _toolsContainerPath)) {
-            EditorToolsController.instance.tools.ForEach(t => {
-                var panel = GD.Load<PackedScene>(t.panelPath).Instantiate();
-                _toolsContainer.AddChild(panel);
-            });
+        EditorToolsController.instance.tools.ForEach(AddPanelFor);
+        var allToolsTypes = EditorToolsController.instance.allToolsTypes;
+        if (allToolsTypes.Count > 0 && this.TryGetCached(ref _toolsListButton, _toolsListButtonPath)) {
+            _toolsListButton.Clear();
+            allToolsTypes.Keys.ToList().ForEach(toolName => _toolsListButton.AddItem(toolName));
         }
-        
-        if (this.TryGetCached(ref _toolsListNode, _toolsListNodePath)) {
-            _toolsListNode.SetSize(new Vector2(_toolsListNode.Size.X, _defaultPanelHeight));
+    }
+
+    private Node MakePanel(IEditorToolPredefinedScene toolWithPredefinedScene) {
+        return GD.Load<PackedScene>(toolWithPredefinedScene.panelPath).Instantiate();
+    }
+
+    private Node MakePanel(IEditorToolRuntimeUI toolWithRuntimeUI) {
+        var panelObject = Activator.CreateInstance(toolWithRuntimeUI.panelType);
+        if (panelObject is not IEditorToolPanelRuntime toolPanelRuntime) {
+            throw new Exception("Tool panel has to implement EditorToolPanelRuntime<T>");
         }
+        toolPanelRuntime.BuildPanel();
+        return toolPanelRuntime as Node;
     }
 
     public void SaveTools() {
@@ -58,6 +89,42 @@ public partial class AssistLibToolsPanel : Control {
             _panelHeightDelta = Mathf.Max(-600, _panelHeightDelta - 10);
             _toolsListNode.SetSize(new Vector2(_toolsListNode.Size.X, _defaultPanelHeight + _panelHeightDelta));
         }
+    }
+
+    private void OnToolRemoved(AssistLibEditorTool tool) {
+        var toolsPanel = _toolsPanels.OfType<IAssistLibToolPanel>().FirstOrDefault(p => p.tool == tool);
+        if (toolsPanel == null) {
+            GD.PushWarning($"No panel for tool {tool.GetType().FullName}");
+            return;
+        }
+
+        var panelNode = toolsPanel as Node;
+        _toolsPanels.Remove(panelNode);
+        RemoveChild(panelNode);
+    }
+
+    public void AddSelectedTool() {
+        if (this.TryGetCached(ref _toolsListButton, _toolsListButtonPath)) {
+            var toolName = _toolsListButton.GetItemText(_toolsListButton.Selected);
+            if (EditorToolsController.instance.allToolsTypes.TryGetValue(toolName, out Type toolType)) {
+                EditorToolsController.instance.AddTool(toolType);
+            }
+        }
+    }
+
+    private void AddPanelFor(AssistLibEditorTool tool) {
+        Node panelNode = null;
+        if (tool is IEditorToolPredefinedScene withPredefined) {
+            panelNode = MakePanel(withPredefined);
+        } else if (tool is IEditorToolRuntimeUI withRuntime) {
+            panelNode = MakePanel(withRuntime);
+        } else {
+            throw new Exception($"Tool panel class has to implement IEditorToolPredefinedScene or " +
+                                $"IEditorToolRuntimeUI: panel type - {tool.GetType().FullName}");
+        }
+        _toolsPanels.Add(panelNode);
+        AddChild(panelNode);
+        AddChild(new HSeparator());
     }
 
     #endregion

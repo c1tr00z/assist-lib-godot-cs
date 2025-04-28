@@ -1,15 +1,16 @@
-using System.Collections.Generic;
+using System;
 using Godot;
 using projectwitch.addons.AssistLib.EditorTools.Scripts;
 
 namespace AssistLib.DB.Editor.EditorTool;
 
 [Tool]
-public class EditorToolDB : AssistLibEditorTool<EditorToolDBSaveData> {
+[EditorTool("DB Tool")]
+public class EditorToolDB : AssistLibEditorTool<EditorToolDBSaveData>, IEditorToolRuntimeUI {
 
     #region AssistLibEditorTool Implementation
 
-    public override string panelPath => "res://addons/AssistLib/DB/Editor/EditorTool/Scenes/assist_lib_db_panel.tscn";
+    public Type panelType => typeof(AssistLibEditorToolDBPanel);
 
     protected override EditorToolDBSaveData GetMySaveData() {
         return new EditorToolDBSaveData();

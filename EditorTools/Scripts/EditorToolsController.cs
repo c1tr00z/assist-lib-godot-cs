@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using c1tr00z.AssistLib.Common;
 using c1tr00z.AssistLib.Json;
 using Godot;
@@ -15,6 +16,10 @@ public class EditorToolsController {
 
     public static event Action RequestData;
 
+    public static event Action<AssistLibEditorTool> ToolAdded;
+    
+    public static event Action<AssistLibEditorTool> ToolRemoved; 
+
     #endregion
     
     #region Private Fields
@@ -24,10 +29,10 @@ public class EditorToolsController {
     private static EditorToolsController _instance;
 
     private EditorToolsData _toolsData;
-
-    private List<Type> _toolsSaveTypes = new();
     
     private List<Type> _toolsTypes = new();
+
+    private Dictionary<String, Type> _allToolsTypes = new();
 
     #endregion
 
@@ -46,6 +51,19 @@ public class EditorToolsController {
 
     public List<AssistLibEditorTool> tools { get; } = new();
 
+    public Dictionary<String, Type> allToolsTypes {
+        get {
+            if (_allToolsTypes.Count == 0) {
+                _allToolsTypes = ReflectionUtils.GetSubclassesOf<AssistLibEditorTool>(false).ToDictionary(t => {
+                    var attribute = t.GetCustomAttributes<EditorToolAttribute>().FirstOrDefault();
+                    return attribute is null ? t.Name : attribute.toolTitle;
+                }, t => t);
+            }
+
+            return _allToolsTypes;
+        }
+    }
+
     #endregion
 
     #region Class Implementation
@@ -53,7 +71,6 @@ public class EditorToolsController {
     private void Init() {
         if (_toolsTypes.Count == 0) {
             _toolsTypes = ReflectionUtils.GetSubclassesOf<AssistLibEditorTool>(false);
-            _toolsSaveTypes = ReflectionUtils.GetTypesByInterface<IEditorToolData>(false);
         }
         var jsonString = AssistLibEditorSettings.Get<string>(SAVE_KEY);
         if (jsonString.IsNullOrEmpty()) {
@@ -61,23 +78,12 @@ public class EditorToolsController {
         } else {
             _toolsData = JSONUtils.FromJsonString<EditorToolsData>(jsonString);
         }
-        var allTypes = ReflectionUtils.GetSubclassesOf<AssistLibEditorTool>(false);
-        allTypes.ForEach(t => {
-            var tool = Activator.CreateInstance(t) as AssistLibEditorTool;
-            if (tool == null) {
-                return;
-            }
 
-            var toolDataType = tool.GetType().BaseType.GenericTypeArguments.FirstOrDefault();
-            var toolSaveData = _toolsData.toolsData.FirstOrDefault(save => toolDataType == save.GetType());
-
-            if (toolSaveData == null) {
-                toolSaveData = Activator.CreateInstance(toolDataType) as IEditorToolData;
-            }
-
-            if (tool.LoadTool(toolSaveData)) {
-                tools.Add(tool);
-            }
+        var allToolsTypesList = allToolsTypes.Values.ToList();
+        _toolsData.toolsData.ForEach(d => {
+            var dataType = d.GetType();
+            var toolType = allToolsTypesList.FirstOrDefault(t => t.GetGenericArguments().Contains(dataType) || t.BaseType.GetGenericArguments().Contains(dataType));
+            AddTool(toolType);
         });
     }
 
@@ -96,7 +102,52 @@ public class EditorToolsController {
             _toolsData.toolsData.Add(t.GetSaveData());
         });
         var jsonString = _toolsData.ToJsonString();
+        GD.PushError($"SAVING:\r\n {jsonString}");
         AssistLibEditorSettings.Set(SAVE_KEY, jsonString);
+    }
+
+    public void AddTool(Type toolType) {
+        if (!typeof(AssistLibEditorTool).IsAssignableFrom(toolType)) {
+            throw new Exception($"toolType ({toolType.FullName} has to be assignable from AssistLibEditorTool");
+        }
+        
+        var tool = Activator.CreateInstance(toolType) as AssistLibEditorTool;
+        if (tool == null) {
+            return;
+        }
+
+        var toolDataType = tool.GetType().BaseType.GenericTypeArguments.FirstOrDefault();
+        var toolSaveData = _toolsData.toolsData.FirstOrDefault(save => toolDataType == save.GetType());
+
+        if (toolSaveData == null) {
+            toolSaveData = Activator.CreateInstance(toolDataType) as IEditorToolData;
+        }
+
+        if (tool.LoadTool(toolSaveData)) {
+            tools.Add(tool);
+            ToolAdded?.Invoke(tool);
+        }
+    }
+
+    public void Remove(AssistLibEditorTool tool) {
+        
+        GD.PushError($"TRYING TO REMOVE TOOL: {tool}");
+        
+        var toolDataType = tool.GetType().BaseType.GenericTypeArguments.FirstOrDefault();
+        var toolSaveData = _toolsData.toolsData.FirstOrDefault(save => toolDataType == save.GetType());
+        GD.PushError($"TOOL SAVE DATA: {toolSaveData}");
+        if (toolSaveData is not null) {
+            _toolsData.toolsData.Remove(toolSaveData);
+        }
+
+        if (tools.Contains(tool)) {
+            GD.PushError($"REMOVE TOOL: {tool}");
+            tools.Remove(tool);
+        }
+        
+        SaveTools();
+        
+        ToolRemoved?.Invoke(tool);
     }
 
     #endregion
