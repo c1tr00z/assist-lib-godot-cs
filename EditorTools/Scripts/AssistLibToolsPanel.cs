@@ -23,6 +23,10 @@ public partial class AssistLibToolsPanel : VBoxContainer {
 
     private OptionButton _toolsListButton = null;
 
+    private Button _saveButton;
+
+    private VBoxContainer _toolsContainer;
+
     #endregion
     
     #region Export Fields
@@ -52,12 +56,22 @@ public partial class AssistLibToolsPanel : VBoxContainer {
     #region Class Implementation
 
     public void InitToolsPanels() {
+        BuildPanel();
         EditorToolsController.instance.tools.ForEach(AddPanelFor);
         var allToolsTypes = EditorToolsController.instance.allToolsTypes;
         if (allToolsTypes.Count > 0 && this.TryGetCached(ref _toolsListButton, _toolsListButtonPath)) {
             _toolsListButton.Clear();
             allToolsTypes.Keys.ToList().ForEach(toolName => _toolsListButton.AddItem(toolName));
         }
+    }
+
+    private void BuildPanel() {
+        var headerLabel = EditorToolsUI.MakeLabel("Tools", true);
+        _saveButton = EditorToolsUI.MakeButton("Save", SaveTools, false);
+        var controlsContainer = EditorToolsUI.MakeHBoxContainer(headerLabel, _saveButton);
+        AddChild(controlsContainer);
+        _toolsContainer = new VBoxContainer();
+        AddChild(_toolsContainer);
     }
 
     private Node MakePanel(IEditorToolPredefinedScene toolWithPredefinedScene) {
