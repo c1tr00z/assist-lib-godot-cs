@@ -102,7 +102,6 @@ public class EditorToolsController {
             _toolsData.toolsData.Add(t.GetSaveData());
         });
         var jsonString = _toolsData.ToJsonString();
-        GD.PushError($"SAVING:\r\n {jsonString}");
         AssistLibEditorSettings.Set(SAVE_KEY, jsonString);
     }
 
@@ -131,17 +130,13 @@ public class EditorToolsController {
 
     public void Remove(AssistLibEditorTool tool) {
         
-        GD.PushError($"TRYING TO REMOVE TOOL: {tool}");
-        
         var toolDataType = tool.GetType().BaseType.GenericTypeArguments.FirstOrDefault();
         var toolSaveData = _toolsData.toolsData.FirstOrDefault(save => toolDataType == save.GetType());
-        GD.PushError($"TOOL SAVE DATA: {toolSaveData}");
         if (toolSaveData is not null) {
             _toolsData.toolsData.Remove(toolSaveData);
         }
 
         if (tools.Contains(tool)) {
-            GD.PushError($"REMOVE TOOL: {tool}");
             tools.Remove(tool);
         }
         

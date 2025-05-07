@@ -27,6 +27,8 @@ public partial class AssistLibToolsPanel : VBoxContainer {
 
     private VBoxContainer _toolsContainer;
 
+    private VBoxContainer _toolsTypesContainer;
+
     #endregion
     
     #region Export Fields
@@ -58,11 +60,6 @@ public partial class AssistLibToolsPanel : VBoxContainer {
     public void InitToolsPanels() {
         BuildPanel();
         EditorToolsController.instance.tools.ForEach(AddPanelFor);
-        var allToolsTypes = EditorToolsController.instance.allToolsTypes;
-        if (allToolsTypes.Count > 0 && this.TryGetCached(ref _toolsListButton, _toolsListButtonPath)) {
-            _toolsListButton.Clear();
-            allToolsTypes.Keys.ToList().ForEach(toolName => _toolsListButton.AddItem(toolName));
-        }
     }
 
     private void BuildPanel() {
@@ -70,8 +67,18 @@ public partial class AssistLibToolsPanel : VBoxContainer {
         _saveButton = EditorToolsUI.MakeButton("Save", SaveTools, false);
         var controlsContainer = EditorToolsUI.MakeHBoxContainer(headerLabel, _saveButton);
         AddChild(controlsContainer);
+        
+        var allToolsTypes = EditorToolsController.instance.allToolsTypes;
+        _toolsListButton = EditorToolsUI.MakeOptionsButton(allToolsTypes.Keys, text => text, true);
+        var addToolButton = EditorToolsUI.MakeButton("Add tool", AddSelectedTool);
+        
+        AddChild(EditorToolsUI.MakeHBoxContainer(EditorToolsUI.MakeLabel("Add tool"), _toolsListButton, addToolButton));
+        
+        AddChild(new HSeparator());
+        AddChild(new HSeparator());
         _toolsContainer = new VBoxContainer();
-        AddChild(_toolsContainer);
+        var toolsScrollContainer = EditorToolsUI.MakeScrollContainer(true, true, _toolsContainer);
+        AddChild(toolsScrollContainer);
     }
 
     private Node MakePanel(IEditorToolPredefinedScene toolWithPredefinedScene) {
@@ -138,7 +145,6 @@ public partial class AssistLibToolsPanel : VBoxContainer {
         }
         _toolsPanels.Add(panelNode);
         AddChild(panelNode);
-        AddChild(new HSeparator());
     }
 
     #endregion
