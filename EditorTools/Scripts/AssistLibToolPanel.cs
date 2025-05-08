@@ -9,15 +9,13 @@ public abstract partial class AssistLibToolPanel<T> : VBoxContainer, IAssistLibT
 
     #region Private Fields
 
-    private T _tool;
-
     private string _toolTitle = null;
 
     #endregion
     
     #region Accessors
 
-    protected T editorTool => CommonExt.GetCached(ref _tool, EditorToolsController.Get<T>);
+    protected T editorTool { get; private set; }
 
     protected bool isPanelActive => this.FindInParentsByType<AssistLibToolsPanel>() != null;
 
@@ -53,6 +51,10 @@ public abstract partial class AssistLibToolPanel<T> : VBoxContainer, IAssistLibT
     #region IAssistLibToolPanel Implementation
 
     public AssistLibEditorTool tool => editorTool;
+
+    public void Init(AssistLibEditorTool tool) {
+        editorTool = tool as T;
+    }
 
     #endregion
 

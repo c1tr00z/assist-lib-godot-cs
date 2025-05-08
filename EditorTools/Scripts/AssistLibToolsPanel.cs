@@ -64,7 +64,7 @@ public partial class AssistLibToolsPanel : VBoxContainer {
 
     private void BuildPanel() {
         var headerLabel = EditorToolsUI.MakeLabel("Tools", true);
-        _saveButton = EditorToolsUI.MakeButton("Save", SaveTools, false);
+        _saveButton = EditorToolsUI.MakeButton("Save", SaveTools);
         var controlsContainer = EditorToolsUI.MakeHBoxContainer(headerLabel, _saveButton);
         AddChild(controlsContainer);
         
@@ -78,17 +78,27 @@ public partial class AssistLibToolsPanel : VBoxContainer {
         AddChild(new HSeparator());
         _toolsContainer = new VBoxContainer();
         var toolsScrollContainer = EditorToolsUI.MakeScrollContainer(true, true, _toolsContainer);
+        _toolsContainer.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         AddChild(toolsScrollContainer);
     }
 
     private Node MakePanel(IEditorToolPredefinedScene toolWithPredefinedScene) {
-        return GD.Load<PackedScene>(toolWithPredefinedScene.panelPath).Instantiate();
+        var panelNode = GD.Load<PackedScene>(toolWithPredefinedScene.panelPath).Instantiate();
+
+        if (panelNode is IAssistLibToolPanel panel) {
+            panel.Init(toolWithPredefinedScene as AssistLibEditorTool);
+        }
+
+        return panelNode;
     }
 
     private Node MakePanel(IEditorToolRuntimeUI toolWithRuntimeUI) {
         var panelObject = Activator.CreateInstance(toolWithRuntimeUI.panelType);
         if (panelObject is not IEditorToolPanelRuntime toolPanelRuntime) {
             throw new Exception("Tool panel has to implement EditorToolPanelRuntime<T>");
+        }
+        if (panelObject is IAssistLibToolPanel panel) {
+            panel.Init(toolWithRuntimeUI as AssistLibEditorTool);
         }
         toolPanelRuntime.BuildPanel();
         return toolPanelRuntime as Node;
@@ -121,7 +131,7 @@ public partial class AssistLibToolsPanel : VBoxContainer {
 
         var panelNode = toolsPanel as Node;
         _toolsPanels.Remove(panelNode);
-        RemoveChild(panelNode);
+        _toolsContainer.RemoveChild(panelNode);
     }
 
     public void AddSelectedTool() {
@@ -144,7 +154,7 @@ public partial class AssistLibToolsPanel : VBoxContainer {
                                 $"IEditorToolRuntimeUI: panel type - {tool.GetType().FullName}");
         }
         _toolsPanels.Add(panelNode);
-        AddChild(panelNode);
+        _toolsContainer.AddChild(panelNode);
     }
 
     #endregion
