@@ -68,5 +68,23 @@ public static class EditorToolsUI {
         return hBoxContainer;
     }
 
+    public static ScrollContainer MakeScrollContainer(bool isVertical = true, bool expand = false, Node child = null) {
+        var scrollContainer = new ScrollContainer();
+
+        if (expand) {
+            if (isVertical) {
+                scrollContainer.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
+            } else {
+                scrollContainer.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+            }
+        }
+
+        if (child is not null) {
+            scrollContainer.AddChild(child);
+        }
+        
+        return scrollContainer;
+    }
+
     #endregion
 }

@@ -5,5 +5,7 @@ public interface IAssistLibToolPanel {
 
     public AssistLibEditorTool tool { get; }
 
+    public void Init(AssistLibEditorTool tool);
+
     #endregion
 }

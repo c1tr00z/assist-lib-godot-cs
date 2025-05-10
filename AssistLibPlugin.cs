@@ -9,16 +9,12 @@ public partial class AssistLibPlugin : EditorPlugin {
     #region Private Fields
 
     private Control _mainPanelInstance = null;
-
-    //TODO: showing tools panel for now
-    private String _pathToWindow = "res://addons/AssistLib/EditorTools/Scenes/assist_lib_tools_panel_scene.tscn";
-
     #endregion
 
     public override void _EnterTree() {
         if (_mainPanelInstance == null) {
-            var packedScene = GD.Load<PackedScene>(_pathToWindow);
-            _mainPanelInstance = packedScene.Instantiate<Control>();
+            _mainPanelInstance = new AssistLibToolsPanel();
+            _mainPanelInstance.Name = "AssistLib Tools";
             if (_mainPanelInstance is AssistLibToolsPanel toolsPanel) {
                 toolsPanel.InitToolsPanels();
             } else {
