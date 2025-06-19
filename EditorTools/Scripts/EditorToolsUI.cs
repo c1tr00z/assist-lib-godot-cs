@@ -30,15 +30,25 @@ public static class EditorToolsUI {
         return button;
     }
 
+    public static CheckBox MakeCheckBox(string text, bool defaultValue, BaseButton.ToggledEventHandler onToggled, bool expand = false) {
+        var checkBox = new CheckBox();
+        checkBox.Text = text;
+        checkBox.ToggleMode = true;
+        checkBox.Toggled += onToggled;
+        checkBox.ButtonPressed = defaultValue;
+
+        return checkBox;
+    }
+
     public static OptionButton MakeOptionsButton<T>(IEnumerable<T> options, Func<T, string> textGetter,
         bool expand = false) {
-        
+
         var optionsButton = new OptionButton();
-        
+
         foreach (var o in options) {
             optionsButton.AddItem(textGetter(o));
         }
-        
+
         if (expand) {
             optionsButton.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
         }
